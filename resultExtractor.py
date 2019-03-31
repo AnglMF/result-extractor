@@ -1,8 +1,42 @@
 from graphqlclient import GraphQLClient
-import json
 from yaml import load
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+import pandas
+import json
 
-class tournamentResultRequest:
+
+class ResultsWorkBook:
+
+  def __init__(self):
+    self.workbook = Workbook()
+    self.worksheet = self.workbook.active
+
+  def register_sets(self, setsDict):
+    firstRow = self.worksheet[1]
+    self.worksheet['A1'] = 'Player1'
+    self.worksheet['B1'] = 'ScorePlayer1'
+    self.worksheet['C1'] = 'Player2'
+    self.worksheet['D1'] = 'ScorePlayer2'
+    self.worksheet['E1'] = 'Player2'
+    self.worksheet['F1'] = 'SocrePlayer2'
+    self.worksheet['G1'] = 'Winner'
+    df = pandas.DataFrame.from_dict(prueba.sets)
+    for r in dataframe_to_rows(df, index=True, header=True):
+      self.worksheet.append(r)
+
+    for cell in self.worksheet['A'] + self.worksheet[1]:
+      cell.style = 'Pandas'
+    print(df)
+    self.save_workbook("test.xlsx")
+
+
+
+  def save_workbook(self, name):
+    self.workbook.save(name)
+
+
+class TournamentResultsRequest:
   eventIDs = []
   participants = {}
   sets = []
@@ -18,9 +52,6 @@ class tournamentResultRequest:
     print(resultObject)
     return resultObject
 
-  def register_sets(self, data):
-    return 0
-
   def create_set_entry(self, rawData, tournament):
     setEntry = {}
     setEntry["SetID"] = rawData["id"]
@@ -35,6 +66,7 @@ class tournamentResultRequest:
   def get_event_sets(self, eventID, tournament):
     pageNumber = 1
     perPage = 60
+    setsRegistered = 0
     eventSetsQuery= '''
       query tournamentSets($eventID: Int, $pageNumber: Int, $perPage: Int){
         event(id:$eventID){
@@ -70,7 +102,14 @@ class tournamentResultRequest:
     eventSets = self.post(eventSetsQuery, {"eventID": eventID, "pageNumber": pageNumber, "perPage": perPage})
     for key, value in enumerate(eventSets["data"]["event"]["sets"]["nodes"]):
       self.create_set_entry(value, tournament)
-    #while not
+    setsRegistered += perPage
+    while not setsRegistered>eventSets["data"]["event"]["sets"]["pageInfo"]["total"]:
+      pageNumber += 1
+      eventSets = self.post(eventSetsQuery, {"eventID": eventID, "pageNumber": pageNumber, "perPage": perPage})
+      for key, value in enumerate(eventSets["data"]["event"]["sets"]["nodes"]):
+        self.create_set_entry(value, tournament)
+      setsRegistered += perPage
+    print(self.sets)
 
   def get_event_participants(self, eventID):
     eventParticipantsQuery= '''
@@ -122,5 +161,7 @@ class tournamentResultRequest:
 
 if __name__ == "__main__":
   listaTorneos = load(open("tournamentList.yml", "r"))
-  prueba = tournamentResultRequest()
+  prueba = TournamentResultsRequest()
   prueba.get_tournament_events(listaTorneos["tournaments"])
+  file = ResultsWorkBook()
+  file.register_sets(prueba.sets)
