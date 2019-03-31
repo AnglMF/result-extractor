@@ -1,2 +1,8 @@
 tournaments:
-  - Smash-Blast-2018
+  - xtr-ultimate-tournament
+  - xtr-ultimate-tournaments-2
+  - xtr-ultimate-tournaments-3
+  - xtr-ultimate-tournaments-4
+
+events:
+  -'Smash Ultimate Singles'

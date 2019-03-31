@@ -13,30 +13,19 @@ class ResultsWorkBook:
     self.worksheet = self.workbook.active
 
   def register_sets(self, setsDict):
-    firstRow = self.worksheet[1]
-    self.worksheet['A1'] = 'Player1'
-    self.worksheet['B1'] = 'ScorePlayer1'
-    self.worksheet['C1'] = 'Player2'
-    self.worksheet['D1'] = 'ScorePlayer2'
-    self.worksheet['E1'] = 'Player2'
-    self.worksheet['F1'] = 'SocrePlayer2'
-    self.worksheet['G1'] = 'Winner'
     df = pandas.DataFrame.from_dict(prueba.sets)
     for r in dataframe_to_rows(df, index=True, header=True):
       self.worksheet.append(r)
-
     for cell in self.worksheet['A'] + self.worksheet[1]:
       cell.style = 'Pandas'
     print(df)
     self.save_workbook("test.xlsx")
 
-
-
   def save_workbook(self, name):
     self.workbook.save(name)
 
 
-class TournamentResultsRequest:
+class TournamentSetsRequest:
   eventIDs = []
   participants = {}
   sets = []
@@ -61,7 +50,9 @@ class TournamentResultsRequest:
     setEntry["Player2"] = self.participants[rawData["slots"][1]["entrant"]["id"]]
     setEntry["ScorePlayer2"] = rawData["slots"][1]["standing"]["stats"]["score"]["value"]
     setEntry["Winner"] = self.participants[rawData["winnerId"]]
-    self.sets.append(setEntry)
+    if not(setEntry["ScorePlayer1"]<0) and not(setEntry["ScorePlayer2"]<0):
+      #DQs are marked on smash.gg as game count -1, so skip don't include DQs
+      self.sets.append(setEntry)
 
   def get_event_sets(self, eventID, tournament):
     pageNumber = 1
@@ -117,7 +108,7 @@ class TournamentResultsRequest:
         event(id:$eventID){
           entrants(query: {
             page: 1
-            perPage: 100
+            perPage: 150
           }){
            nodes{
               id
@@ -135,7 +126,7 @@ class TournamentResultsRequest:
       if self.participants.get(value["id"]) == None:
         self.participants[value["id"]] = value["participants"][0]["gamerTag"]
 
-  def get_tournament_events(self, tournaments):
+  def get_tournament_events(self, tournaments, events):
     tournamentQuery = '''
       query TournamentQuery($tournamentName: String) {
         tournament(slug: $tournamentName){
@@ -152,7 +143,7 @@ class TournamentResultsRequest:
       tournamentQueryResults = self.post(tournamentQuery, {"tournamentName": tournament})
       tournamentsResponse = (tournamentQueryResults)
       for key, value in enumerate(tournamentsResponse["data"]["tournament"]["events"]):
-        if (value["name"] == 'Melee Singles'):
+        if (value["name"] in events):
           self.eventIDs.append(value["id"])
           self.get_event_participants(value["id"])
           print(self.participants)
@@ -161,7 +152,7 @@ class TournamentResultsRequest:
 
 if __name__ == "__main__":
   listaTorneos = load(open("tournamentList.yml", "r"))
-  prueba = TournamentResultsRequest()
-  prueba.get_tournament_events(listaTorneos["tournaments"])
+  prueba = TournamentSetsRequest()
+  prueba.get_tournament_events(listaTorneos["tournaments"], listaTorneos["events"])
   file = ResultsWorkBook()
   file.register_sets(prueba.sets)
