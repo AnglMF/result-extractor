@@ -33,6 +33,6 @@ class tournamentResultRequest:
 
 
 if __name__ == "__main__":
-  listaTorneos = load("tournamentList.yml")
+  listaTorneos = load(open("tournamentList.yml", "r"))
   prueba = tournamentResultRequest()
-  prueba.getTournamentEvents(["Smash-Blast-2018"])
+  prueba.getTournamentEvents(listaTorneos["tournaments"])
