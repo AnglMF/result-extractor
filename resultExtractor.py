@@ -2,6 +2,7 @@ from graphqlclient import GraphQLClient
 from yaml import load
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import Alignment
 
 import pandas
 import json
@@ -41,6 +42,10 @@ class ResultsWorkBook:
 
     def save_workbook(self, name):
         self.workbook.save(name)
+        self.workbook.close()
+        column = self.worksheet.column_dimensions['B']
+        column.alignment = Alignment(horizontal='center')
+
 
 
 class Participant:
@@ -90,15 +95,16 @@ class Participant:
 
 
 class TournamentSetsRequest:
-    events = []  # {event_id, tournament}
-    participants = []  # Id, gamerTag, {tournament, placing}
+    auth_token = 'YOUR TOKEN HERE'
+    events = []             # {event_id, tournament}
+    participants = []       # Id, gamerTag, {tournament, placing}
     participants_dict = {}
-    sets = []  # {SetId, Tournament, Player1, Score1, Player2, Score2, Winner}
+    sets = []               # {SetId, Tournament, Player1, Score1, Player2, Score2, Winner}
     cache_responses = {}
 
     def __init__(self):
         self.client = GraphQLClient('https://api.smash.gg/gql/alpha')
-        self.client.inject_token('Bearer ' + '026d66d8eeb4f1e73aa2ebe750388536')
+        self.client.inject_token('Bearer ' + self.auth_token)
 
     def _log(self, _message, _object):
         print('{msg}:\n{obj}'.format(msg=_message, obj=_object))
