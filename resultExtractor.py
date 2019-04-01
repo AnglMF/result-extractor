@@ -94,12 +94,14 @@ class TournamentSetsRequest:
         print('{msg}:\n{obj}'.format(msg=_message, obj=_object))
 
     def _post(self, query_name,  query, query_variables):
+        self._log("Query: {name}\nQuery Variables: {variables}".format(name=query_name, variables=query_variables),
+                  "--------------------------------")
         result = self.client.execute(query, query_variables)
         result_object = json.loads(result)
         self.cache_responses[query_name] = result_object
-        self._log("Query Response", result_object)
-        if "error" in result_object:
-            self._log("Error in query{query}".format(query=query_name), query)
+        if "errors" in result_object.keys():
+            self._log("Query Response", result_object)
+            raise ValueError
         return result_object
 
     def _update_participants_dict(self):
@@ -258,9 +260,6 @@ class TournamentSetsRequest:
                 self.participants.append(new_participant)
 
         self._update_participants_dict()
-        self._log("participantes", self.participants)
-        # self._set_participant_placement_per_event(enumerate(participants_data["data"]["event"]["standings"]["nodes"]),
-        #                                           event["tournament"])
 
     def _get_tournament_events(self, tournaments, events):
         event_id_list = []
@@ -276,12 +275,24 @@ class TournamentSetsRequest:
             }
           }
         '''
+        tournament_query_response = ''
         for tournament in tournaments:
-            tournament_query_results = self._post("tournament events", tournament_query, {"tournamentName": tournament})
-            tournaments_response = tournament_query_results
-            for key, value in enumerate(tournaments_response["data"]["tournament"]["events"]):
-                if value["name"] in events:
-                    event_id_list.append({"event_id": value["id"], "tournament": tournament})
+            try:
+                tournament_query_response = self._post("tournament events", tournament_query,
+                                                       {"tournamentName": tournament})
+                event_found = 0
+                self._log('Looking for events:\n{events}'.format(events=events), '')
+                for key, value in enumerate(tournament_query_response["data"]["tournament"]["events"]):
+                    self._log("'{ev}' event on {t}".format(ev=value["name"],t=tournament), '')
+                    if value["name"] in events:
+                        event_id_list.append({"event_id": value["id"], "tournament": tournament})
+                        event_found = 1
+                if not event_found:
+                    self._log('Not all events found on {tournament}'.format(tournament=tournament), '-----------------')
+            except ValueError:
+                self._log("There's an error with the query", tournament_query_response)
+            except TypeError:
+                self._log("Query response empty, tournament not found", tournament)
 
         return event_id_list
 
