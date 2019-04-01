@@ -12,17 +12,27 @@ class ResultsWorkBook:
     def __init__(self):
         self.workbook = Workbook()
         self.worksheet = self.workbook.active
+        self.index = 1
 
-    def register_placings(self, data):
-        df = pandas.DataFrame.from_dict(data)
+    def new_worksheet(self, name):
+        self.index += 1
+        return self.workbook.create_sheet(title=name, index=self.index)
+
+    def register_placings(self, info):
+        self.worksheet = self.new_worksheet("Placings")
+        df = pandas.DataFrame.from_dict(info)
+        df = df.sort_values("Avg Placing")
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
         for cell in self.worksheet['A'] + self.worksheet[1]:
             cell.style = 'Pandas'
         print(df)
 
-    def register_sets(self, data):
-        df = pandas.DataFrame.from_dict(data)
+    def register_sets(self, info):
+        self.worksheet.title = "Sets Head 2 Head"
+        df = pandas.DataFrame.from_dict(info)
+        orden = ["ScorePlayer1", "Player1", "Player2", "ScorePlayer2", "Tournament", "SetID"]
+        df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
         for cell in self.worksheet['A'] + self.worksheet[1]:
@@ -38,9 +48,9 @@ class Participant:
     id = None
     name = ''
 
-    def __init__(self, name, id):
+    def __init__(self, name, player_id):
         self.name = name
-        self.id = id
+        self.id = player_id
         self.placings = {}
 
     def average_placing(self):
@@ -60,7 +70,7 @@ class Participant:
             self.placings[tournament] = result
 
     def get_info(self):
-        print('ID: {id}\nName: {name}\n Placings:\n{placings}'.format(id=self.id,name=self.name,
+        print('ID: {id}\nName: {name}\n Placings:\n{placings}'.format(id=self.id, name=self.name,
                                                                       placings=self.placings))
 
     def as_dict(self):
@@ -106,8 +116,8 @@ class TournamentSetsRequest:
 
     def _update_participants_dict(self):
         udpated_dict = {}
-        for participant in self.participants:
-            udpated_dict[participant.id] = participant.name
+        for registered_participant in self.participants:
+            udpated_dict[registered_participant.id] = registered_participant.name
         self.participants_dict = udpated_dict
 
     def get_tournament_sets(self, tournaments, event):
@@ -192,14 +202,15 @@ class TournamentSetsRequest:
             sets_registered += per_page
 
     def set_participant_placement(self, participant_id, event, placement):
-        for participant in self.participants:
-            if participant.id == participant_id:
-                participant.set_tournament_placing(event["tournament"], placement)
+        for nemo_participant in self.participants:
+            if nemo_participant.id == participant_id:
+                nemo_participant.set_tournament_placing(event["tournament"], placement)
 
     def _set_participant_placement_per_event(self, event):
         response = self._get_event_standings(event)
         for key, value in enumerate(response["data"]["event"]["standings"]["nodes"]):
-            self.set_participant_placement(value["entrant"]["participants"][0]["player"]["id"], event, value["placement"])
+            self.set_participant_placement(value["entrant"]["participants"][0]["player"]["id"], event,
+                                           value["placement"])
 
     def _get_event_standings(self, event):
         event_standings_query = '''
@@ -254,7 +265,8 @@ class TournamentSetsRequest:
         new_participant = None
         for key, value in enumerate(participants_data["data"]["event"]["entrants"]["nodes"]):
             del new_participant
-            new_participant = Participant(value["participants"][0]["gamerTag"], value["participants"][0]["player"]["id"])
+            new_participant = Participant(
+                value["participants"][0]["gamerTag"], value["participants"][0]["player"]["id"])
             if new_participant.id not in self.participants_dict.keys():
                 new_participant.set_tournaments_list(listaTorneos["tournaments"])
                 self.participants.append(new_participant)
@@ -283,7 +295,7 @@ class TournamentSetsRequest:
                 event_found = 0
                 self._log('Looking for events:\n{events}'.format(events=events), '')
                 for key, value in enumerate(tournament_query_response["data"]["tournament"]["events"]):
-                    self._log("'{ev}' event on {t}".format(ev=value["name"],t=tournament), '')
+                    self._log("'{ev}' event on {t}".format(ev=value["name"], t=tournament), '')
                     if value["name"] in events:
                         event_id_list.append({"event_id": value["id"], "tournament": tournament})
                         event_found = 1
