@@ -3,10 +3,11 @@ import json
 from yaml import load
 
 class tournamentResultRequest:
+  auth_token = 'YOUR TOKEN HERE'
 
   def __init__(self):
     self.client = GraphQLClient('https://api.smash.gg/gql/alpha')
-    self.client.inject_token('Bearer ' + '026d66d8eeb4f1e73aa2ebe750388536')
+    self.client.inject_token('Bearer ' + self.auth_token)
     variables = ''
     query = ''
     
