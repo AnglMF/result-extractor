@@ -47,7 +47,6 @@ class ResultsWorkBook:
         column.alignment = Alignment(horizontal='center')
 
 
-
 class Participant:
     placings = []
     id = None
@@ -157,7 +156,7 @@ class TournamentSetsRequest:
         per_page = 49
         sets_registered = 0
         event_sets_query = '''
-          query tournamentSets($eventID: Int, $page_number: Int, $per_page: Int){
+          query tournamentSets($eventID: ID, $page_number: Int, $per_page: Int){
             event(id:$eventID){
               sets(
                 page: $page_number
@@ -221,7 +220,7 @@ class TournamentSetsRequest:
 
     def _get_event_standings(self, event):
         event_standings_query = '''
-            query EventParticipants($eventID: Int){
+            query EventParticipants($eventID: ID){
             event(id:$eventID){
               standings(query: {
                 page:1
@@ -247,7 +246,7 @@ class TournamentSetsRequest:
 
     def _get_event_participants(self, event):
         event_participants_query = '''
-            query EventParticipants($eventID: Int){
+            query EventParticipants($eventID: ID){
             event(id:$eventID){
               entrants(query: {
                 page: 1
