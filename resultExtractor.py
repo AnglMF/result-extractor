@@ -94,7 +94,7 @@ class Participant:
 
 
 class TournamentSetsRequest:
-    auth_token = '026d66d8eeb4f1e73aa2ebe750388536'
+    auth_token = 'YOUR TOKEN HERE'
     events = []             # {event_id, tournament}
     participants = []       # Id, gamerTag, {tournament, placing}
     participants_dict = {}
