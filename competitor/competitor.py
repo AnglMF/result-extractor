@@ -22,14 +22,14 @@ class Competitor:
         self.placings[tournament] = placing
         self.tournaments_assisted += 1
         self.__calculate_attendance()
+        self.__get_avg_placing()
 
-    def get_avg_placing(self):
+    def __get_avg_placing(self):
         total_value = 0
         for placing in self.placings.values():
             if not placing == '-':
                 total_value += placing
         self.average = total_value/self.tournaments_assisted
-        return self.average
 
     def register_set(self, set_object):
         self.__sets.register_set(set_object)
@@ -62,6 +62,7 @@ class Competitor:
         competitor_dict['avg_placing'] = self.average
         for tournament in self.placings.keys():
             competitor_dict[tournament] = self.placings[tournament]
+        return competitor_dict
 
     def win_percentage(self):
         return self.__sets.get_win_percentage()

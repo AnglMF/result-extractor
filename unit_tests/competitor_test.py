@@ -58,7 +58,7 @@ class CompetitorTest(unittest.TestCase):
     def test_calculates_average_placing_correctly(self):
         self.mock_competitor.register_placing('tournament1', 3)
         self.mock_competitor.register_placing('tournament3', 1)
-        assert self.mock_competitor.get_avg_placing() == 2
+        assert self.mock_competitor.average == 2
 
     def test_return_tournament_attendance(self):
         attendance = self.mock_competitor.assistance_percentage

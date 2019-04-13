@@ -15,15 +15,17 @@ import json
 
 class Ranking:
     def __init__(self):
+        self.total_sets = SetHistory('Global')
         self.competitors = []
         self.__qualified_competitors = []
         self.__unqualified_competitors = []
+        self.__total_competitors = []
         self.__unordered = True
 
     def sort_by_avg_placing(self):
         if self.__unordered:
             self.__unordered = False
-            sorted_list = sorted(self.competitors, key=lambda each_competitor: each_competitor.average, reverse=True)
+            sorted_list = sorted(self.competitors, key=lambda each_competitor: each_competitor.average)
             self.competitors = sorted_list
 
     def set_assistance_requirement(self, **kwargs):
@@ -39,6 +41,8 @@ class Ranking:
                     self.__qualified_competitors.append(competitor)
                 else:
                     self.__unqualified_competitors.append(competitor)
+        self.__total_competitors = self.competitors
+        self.competitors = self.__qualified_competitors
 
     def get(self):
         self.sort_by_avg_placing()
@@ -51,11 +55,11 @@ class Ranking:
         try:
             for i in range(0, 14):
                 sets_to_register = []
-                for set in prueba.sets.get_sets():
-                    if self.__qualified_competitors[i].gamertag in set.get_players():
+                for set in self.total_sets.sets:
+                    if self.competitors[i].gamertag in set.get_players():
                         sets_to_register.append(set)
                 for set in sets_to_register:
-                    self.__qualified_competitors[i].register_set(set)
+                    self.competitors[i].register_set(set)
         except IndexError:
             print('Not Enough quelified competitors')
 
@@ -103,7 +107,7 @@ class TournamentSetsRequest:
     events = []             # {event_id, tournament}
     ranking = Ranking()      # Id, gamerTag, {tournament, placing}
     participants_dict = {}
-    sets = SetHistory('Global')
+    sets = ranking.total_sets
     cache_responses = {}
 
     def __init__(self):
