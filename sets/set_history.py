@@ -8,7 +8,7 @@ class SetHistory:
         self.__unsorted = False
         self.total_set_count = 0
 
-    def get_win_percent(self):
+    def get_win_percentage(self):
         return len(self.get_sets_won())/self.total_set_count
 
     def get_sets_won(self):
@@ -21,11 +21,11 @@ class SetHistory:
         sets_lost = [set for set in self.__sets if not self.player == set.winner]
         return self.get_sets_dict_list(sets_lost)
 
-    def register_set(self, set_data):
+    def register_set(self, set_object):
         try:
-            if isinstance(set_data, Set):
+            if isinstance(set_object, Set):
                 self.__unsorted = True
-                self.__sets.append(set_data)
+                self.__sets.append(set_object)
                 self.total_set_count += 1
             else:
                 raise ValueError
@@ -47,7 +47,7 @@ class SetHistory:
 
     def get_sets(self):
         self.__sort_sets()
-        return self.get_sets_dict_list(self.__sets)
+        return self.get_sets_won() + self.get_sets_lost()
 
     def get_sets_dict_list(self, set_list):
         self.__sort_sets()

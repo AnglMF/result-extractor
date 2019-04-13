@@ -127,9 +127,9 @@ class SetHistoryTest(unittest.TestCase):
             }
         ]
     }
-    mock_set1 = Set(mock_set1_data)
-    mock_set2 = Set(mock_set2_data)
-    mock_set3 = Set(mock_set3_data)
+    mock_set1 = Set(mock_set1_data, 'tournament1')
+    mock_set2 = Set(mock_set2_data, 'tournament2')
+    mock_set3 = Set(mock_set3_data, 'tournament3')
     set_history = SetHistory('GoodPlayer')
 
     def test_correctly_register_set(self):
@@ -179,5 +179,5 @@ class SetHistoryTest(unittest.TestCase):
         assert self.set_history.get_sets() == expected_value
 
     def test_get_correct_win_percentage(self):
-        assert self.set_history.get_win_percent() == 2/3
+        assert self.set_history.get_win_percentage() == 2/3
 
