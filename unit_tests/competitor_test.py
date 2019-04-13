@@ -48,18 +48,18 @@ class CompetitorTest(unittest.TestCase):
             }
         ]
     }
-    mock_set1 = Set(mock_set1_data)
+    mock_set1 = Set(mock_set1_data, 'tournament1')
 
     def test_return_no_attendance(self):
-        placings = self.mock_competitor.get_placings()
+        placings = self.mock_competitor.placings
         expected_placings = {'tournament1': '-', 'tournament2': '-', 'tournament3': '-', 'tournament4': '-'}
         assert expected_placings == placings
 
     def test_return_tournament_attendance(self):
         self.mock_competitor.register_placing('tournament1', 3)
         self.mock_competitor.register_placing('tournament3', 3)
-        attendance = self.mock_competitor.get_attendance()
-        assert attendance == 0.5
+        attendance = self.mock_competitor.assistance_percentage
+        assert attendance == 50
 
     def test_register_competitor_set(self):
         self.mock_competitor.register_set(self.mock_set1)
