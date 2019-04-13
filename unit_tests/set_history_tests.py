@@ -142,17 +142,16 @@ class SetHistoryTest(unittest.TestCase):
             assert False
 
     def test_returns_sorted_sets_by_relevance(self):
-        expected_value = [self.mock_set2, self.mock_set3, self.mock_set1]
-        self.set_history.sort_sets()
-        assert(self.set_history.get_sets(), expected_value)
+        expected_value = [self.mock_set2.as_dict(), self.mock_set3.as_dict(), self.mock_set1.as_dict()]
+        assert self.set_history.get_sets() == expected_value
 
     def test_returns_sets_vs_opponent(self):
-        expected_value = [self.mock_set2, self.mock_set3]
-        assert(self.set_history.get_sets_vs('BadPlayer'), expected_value)
+        expected_value = [self.mock_set2.as_dict(), self.mock_set3.as_dict()]
+        assert self.set_history.get_sets_vs('BadPlayer') == expected_value
 
     def test_returns_lost_sets(self):
-        expected_value = [self.mock_set1]
-        assert(self.set_history.get_sets_lost(), expected_value)
+        expected_value = [self.mock_set1.as_dict()]
+        assert self.set_history.get_sets_lost() == expected_value
 
     def test_returns_error_when_calling_sets_vs_opponent_not_in_sets(self):
         try:
@@ -172,8 +171,13 @@ class SetHistoryTest(unittest.TestCase):
             "round": 4},
             {"score1": 3, "p1": "GoodPlayer", "score2": 0, "p2": "BadPlayer", "winner": "GoodPlayer",
             "round": 2},
-            {"score1": 0, "p1": "GoodPlayer", "score2": 2, "p2": "GreatPlyer", "winner": "GreatPlayer",
+            {"score1": 0, "p1": "GoodPlayer", "score2": 2, "p2": "GreatPlayer", "winner": "GreatPlayer",
             "round": 1}
         ]
-        assert(self.set_history.get_sets_dict(), expected_value)
+        print(self.set_history.get_sets())
+        print(expected_value)
+        assert self.set_history.get_sets() == expected_value
+
+    def test_get_correct_win_percentage(self):
+        assert self.set_history.get_win_percent() == 2/3
 

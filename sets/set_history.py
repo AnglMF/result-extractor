@@ -6,36 +6,50 @@ class SetHistory:
         self.__sets = []
         self.player = player
         self.__sets_list = []
+        self.__unsorted = False
+        self.total_set_count = 0
+
+    def get_win_percent(self):
+        return len(self.get_sets_won())/self.total_set_count
 
     def get_sets_won(self):
+        self.__sort_sets()
         sets_won = [set for set in self.__sets if self.player == set.winner]
-        return sets_won
+        return self.get_sets_dict_list(sets_won)
 
     def get_sets_lost(self):
+        self.__sort_sets()
         sets_lost = [set for set in self.__sets if not self.player == set.winner]
-        return sets_lost
+        return self.get_sets_dict_list(sets_lost)
 
     def register_set(self, set_data):
         if isinstance(set_data, Set):
+            self.__unsorted = True
             self.__sets.append(set_data)
+            self.total_set_count += 1
         else:
             raise ValueError('Invalid set value')
 
     def get_sets_vs(self, opponent):
+        self.__sort_sets()
         sets_h2h = [set for set in self.__sets if opponent in set.get_players()]
         if not sets_h2h:
             raise ValueError('No sets vs specified player: {op}'.format(op=opponent))
         else:
-            return sets_h2h
+            return self.get_sets_dict_list(sets_h2h)
 
-    def sort_sets(self):
-        self.__sets = sorted(self.__sets, key=lambda each_set: each_set.round, reverse=True)
+    def __sort_sets(self):
+        if self.__unsorted:
+            self.__unsorted = False
+            self.__sets = sorted(self.__sets, key=lambda each_set: each_set.round, reverse=True)
 
     def get_sets(self):
-        return self.__sets
+        self.__sort_sets()
+        return self.get_sets_dict_list(self.__sets)
 
-    def get_sets_dict(self):
-        self.__sets_list = []
-        for set in self.__sets:
-            self.__sets_list.append(set.as_dict())
-        return self.__sets_list
+    def get_sets_dict_list(self, set_list):
+        self.__sort_sets()
+        requested_sets_as_dict_list = []
+        for set in set_list:
+            requested_sets_as_dict_list.append(set.as_dict())
+        return requested_sets_as_dict_list
