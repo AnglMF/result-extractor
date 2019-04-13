@@ -44,7 +44,7 @@ class SetTest(unittest.TestCase):
             }
         ]
     }
-    mock_set = Set(mock_set_data)
+    mock_set = Set(mock_set_data, 'tournament1')
 
     def test_returns_players_list(self):
         assert self.mock_set.get_players() == ['GoodPlayer', 'BadPlayer']
@@ -99,7 +99,5 @@ class SetTest(unittest.TestCase):
                 }
             ]
         }
-        mock_set_negative_round = Set(mock_set_data)
+        mock_set_negative_round = Set(mock_set_data, 'tournament2')
         assert mock_set_negative_round.get_round() == 3
-
-

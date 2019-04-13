@@ -155,7 +155,7 @@ class SetHistoryTest(unittest.TestCase):
 
     def test_returns_error_when_calling_sets_vs_opponent_not_in_sets(self):
         try:
-            print(self.set_history.get_sets_vs('non_existent_player'))
+            self.set_history.get_sets_vs('non_existent_player')
         except ValueError:
             assert True
 
@@ -174,8 +174,6 @@ class SetHistoryTest(unittest.TestCase):
             {"score1": 0, "p1": "GoodPlayer", "score2": 2, "p2": "GreatPlayer", "winner": "GreatPlayer",
             "round": 1}
         ]
-        print(self.set_history.get_sets())
-        print(expected_value)
         assert self.set_history.get_sets() == expected_value
 
     def test_get_correct_win_percentage(self):
