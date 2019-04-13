@@ -31,4 +31,4 @@ class Set:
         return set_as_dict
 
     def get_round(self):
-        return self.round
+        return abs(self.round)
