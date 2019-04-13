@@ -9,30 +9,32 @@ class Competitor:
         self.average = 0
         self.tournaments_assisted = 0
         self.assistance_percentage = 0
+        self.__sets_won = 0
+        self.win_percentage = 0
         for tournament in tournaments:
             self.placings[tournament] = '-'
         self.__sets = SetHistory(self.gamertag)
 
-    def calculate_attendance(self):
+    def __calculate_attendance(self):
         self.assistance_percentage = self.tournaments_assisted/len(self.placings.keys()) * 100
 
     def register_placing(self, tournament, placing):
         self.placings[tournament] = placing
         self.tournaments_assisted += 1
-        self.calculate_attendance()
+        self.__calculate_attendance()
 
     def get_avg_placing(self):
         total_value = 0
-        assisted_tournaments = 0
         for placing in self.placings.values():
             if not placing == '-':
                 total_value += placing
-                assisted_tournaments += 1
-        self.average = total_value/assisted_tournaments
+        self.average = total_value/self.tournaments_assisted
         return self.average
 
     def register_set(self, set_object):
         self.__sets.register_set(set_object)
+        if set_object.winner == self.gamertag:
+            self.__sets_won += 1
 
     def sets(self, type, **kwargs):
         try:
@@ -58,3 +60,6 @@ class Competitor:
         competitor_dict['avg_placing'] = self.average
         for tournament in self.placings.keys():
             competitor_dict[tournament] = self.placings[tournament]
+
+    def win_percentage(self):
+        return self.__sets.get_win_percentage()
