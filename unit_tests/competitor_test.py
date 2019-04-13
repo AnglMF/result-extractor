@@ -68,6 +68,9 @@ class CompetitorTest(unittest.TestCase):
     def test_return_empty_list_for_not_found_sets(self):
         assert self.mock_competitor.sets('won') == []
 
+    def test_return_list_with_sets_found(self):
+        assert self.mock_competitor.sets('vs', opponent='GreatPlayer') == [self.mock_set1.as_dict()]
+
     def test_fails_when_invalid_option_on_set_request(self):
         try:
             self.mock_competitor.sets('invalid_option')
