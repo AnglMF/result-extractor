@@ -45,6 +45,8 @@ class Competitor:
             elif type == 'vs':
                 opponent = kwargs.get('opponent')
                 set_history = self.__sets.get_sets_vs(opponent)
+            elif type == 'all':
+                set_history = self.__sets.get_sets()
             else:
                 raise ValueError
             if not set_history:

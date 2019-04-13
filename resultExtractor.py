@@ -4,9 +4,60 @@ from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.styles import Alignment
 
+from competitor.competitor import Competitor
+from sets.set_history import SetHistory
+from sets.set import Set
+import queries
+
 import pandas
 import json
 
+
+class Ranking:
+    def __init__(self):
+        self.competitors = []
+        self.__qualified_competitors = []
+        self.__unqualified_competitors = []
+        self.__unordered = True
+
+    def sort_by_avg_placing(self):
+        if self.__unordered:
+            self.__unordered = False
+            sorted_list = sorted(self.competitors, key=lambda each_competitor: each_competitor.average, reverse=True)
+            self.competitors = sorted_list
+
+    def set_assistance_requirement(self, **kwargs):
+        if kwargs.get("tournament_number"):
+            for competitor in self.competitors:
+                if competitor.tournaments_assisted >= kwargs.get("tournament_number"):
+                    self.__qualified_competitors.append(competitor)
+                else:
+                    self.__unqualified_competitors.append(competitor)
+        elif kwargs.get("assistance_percentage"):
+            for competitor in self.competitors:
+                if competitor.assistance_percentage >= kwargs.get("assistance_percentage"):
+                    self.__qualified_competitors.append(competitor)
+                else:
+                    self.__unqualified_competitors.append(competitor)
+
+    def get(self):
+        self.sort_by_avg_placing()
+        competitor_list = []
+        for competitor in self.competitors:
+            competitor_list.append(competitor.as_dict())
+        return competitor_list
+
+    def assign_set_history_for_top_15_players(self):
+        try:
+            for i in range(0, 14):
+                sets_to_register = []
+                for set in prueba.sets.get_sets():
+                    if self.__qualified_competitors[i].gamertag in set.get_players():
+                        sets_to_register.append(set)
+                for set in sets_to_register:
+                    self.__qualified_competitors[i].register_set(set)
+        except IndexError:
+            print('Not Enough quelified competitors')
 
 class ResultsWorkBook:
 
@@ -47,58 +98,12 @@ class ResultsWorkBook:
         column.alignment = Alignment(horizontal='center')
 
 
-class Participant:
-    placings = []
-    id = None
-    name = ''
-
-    def __init__(self, name, player_id):
-        self.name = name
-        self.id = player_id
-        self.placings = {}
-
-    def average_placing(self):
-        tournament_number = 0
-        total_placings = 0
-        for key, value in self.placings.items():
-            if not value == '-':
-                total_placings += value
-                tournament_number += 1
-        return total_placings/tournament_number
-
-    def set_tournaments_list(self, tournaments):
-        for tournament in tournaments:
-            self.placings[tournament] = "-"
-
-    def set_tournament_placing(self, tournament, result):
-            self.placings[tournament] = result
-
-    def get_info(self):
-        print('ID: {id}\nName: {name}\n Placings:\n{placings}'.format(id=self.id, name=self.name,
-                                                                      placings=self.placings))
-
-    def as_dict(self):
-        object_dict = {}
-        object_dict["Id"] = self.id
-        object_dict["GamerTag"] = self.name
-        for key, value in self.placings.items():
-            object_dict[key] = value
-        object_dict["Avg Placing"] = self.average_placing()
-        return object_dict
-
-    def equals(self, doppleganger):
-        if self.id == doppleganger.id:
-            return True
-        else:
-            return False
-
-
 class TournamentSetsRequest:
     auth_token = 'YOUR TOKEN HERE'
     events = []             # {event_id, tournament}
-    participants = []       # Id, gamerTag, {tournament, placing}
+    ranking = Ranking()      # Id, gamerTag, {tournament, placing}
     participants_dict = {}
-    sets = []               # {SetId, Tournament, Player1, Score1, Player2, Score2, Winner}
+    sets = SetHistory('Global')
     cache_responses = {}
 
     def __init__(self):
@@ -121,76 +126,33 @@ class TournamentSetsRequest:
 
     def _update_participants_dict(self):
         udpated_dict = {}
-        for registered_participant in self.participants:
-            udpated_dict[registered_participant.id] = registered_participant.name
+        for registered_participant in self.ranking.competitors:
+            udpated_dict[registered_participant.id] = registered_participant.gamertag
         self.participants_dict = udpated_dict
 
     def get_tournament_sets(self, tournaments, event):
         self.events = self._get_tournament_events(tournaments, event)
         for event in self.events:
             self._get_event_participants(event)
-            self._log("Participant list", self.participants)
+            self._log("Participant list", self.ranking.competitors)
             self._get_event_sets(event)
             self._set_participant_placement_per_event(event)
-            self._log("Participants with placings", self.participants)
+            self._log("Participants with placings", self.ranking.competitors)
 
         self._log("cache", self.cache_responses)
 
     def _create_set_entry(self, raw_data, tournament):
-        set_entry = {}
-        set_entry["SetID"] = raw_data["id"]
-        set_entry["Tournament"] = tournament
-        set_entry["Player1"] = \
-            self.participants_dict[raw_data["slots"][0]["entrant"]["participants"][0]["player"]["id"]]
-        set_entry["ScorePlayer1"] = raw_data["slots"][0]["standing"]["stats"]["score"]["value"]
-        set_entry["Player2"] = \
-            self.participants_dict[raw_data["slots"][1]["entrant"]["participants"][0]["player"]["id"]]
-        set_entry["ScorePlayer2"] = raw_data["slots"][1]["standing"]["stats"]["score"]["value"]
+        set_entry = Set(raw_data, tournament)
         # set_entry["Winner"] = participants_dict[raw_data["winnerId"]]
-        if not(set_entry["ScorePlayer1"] < 0) and not(set_entry["ScorePlayer2"] < 0):
-            # DQs are marked on smash.gg as game count -1, so skip don't include DQs
-            self.sets.append(set_entry)
+        if set_entry.score1 >= 0 and set_entry.score2 >= 0:
+            # DQs are marked on smash.gg as game count -1, so don't include DQs
+            self.sets.register_set(set_entry)
 
     def _get_event_sets(self, event):
         page_number = 1
         per_page = 49
         sets_registered = 0
-        event_sets_query = '''
-          query tournamentSets($eventID: ID, $page_number: Int, $per_page: Int){
-            event(id:$eventID){
-              sets(
-                page: $page_number
-                perPage: $per_page
-              ){
-                pageInfo{
-                  total
-                }
-                nodes{
-                  winnerId
-                  id
-                  slots{
-                    id
-                    standing{
-                      placement
-                      stats{
-                        score{
-                          value
-                        }
-                      }
-                    }
-                    entrant{
-                      participants{
-                        player{
-                          id
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        '''
+        event_sets_query = queries.event_sets_query()
         event_sets = self._post("event sets", event_sets_query, {"eventID": event["event_id"],
                                                                  "page_number": page_number,
                                                                  "per_page": per_page})
@@ -207,9 +169,9 @@ class TournamentSetsRequest:
             sets_registered += per_page
 
     def set_participant_placement(self, participant_id, event, placement):
-        for nemo_participant in self.participants:
+        for nemo_participant in self.ranking.competitors:
             if nemo_participant.id == participant_id:
-                nemo_participant.set_tournament_placing(event["tournament"], placement)
+                nemo_participant.register_placing((event["tournament"], placement))
 
     def _set_participant_placement_per_event(self, event):
         response = self._get_event_standings(event)
@@ -218,80 +180,29 @@ class TournamentSetsRequest:
                                            value["placement"])
 
     def _get_event_standings(self, event):
-        event_standings_query = '''
-            query EventParticipants($eventID: ID){
-            event(id:$eventID){
-              standings(query: {
-                page:1
-                perPage: 150
-              }){
-                nodes{
-                  entrant{
-                    participants{
-                      player{
-                        id
-                      }
-                    }
-                  }
-                  placement
-                }
-              }
-            }
-          }
-        '''
+        event_standings_query = queries.event_standings_query()
         participants_response = self._post("event standings", event_standings_query,
                                            {"eventID": event["event_id"]})
         return participants_response
 
     def _get_event_participants(self, event):
-        event_participants_query = '''
-            query EventParticipants($eventID: ID){
-            event(id:$eventID){
-              entrants(query: {
-                page: 1
-                perPage: 150
-              }){
-               nodes{
-                  id
-                  participants{
-                    gamerTag
-                    player{
-                      id
-                    }
-                  }
-                }
-              }
-            }
-          }
-        '''
+        event_participants_query = queries.event_participants_query()
         participants_response = self._post("event participants", event_participants_query,
                                            {"eventID": event["event_id"]})
         participants_data = participants_response
         new_participant = None
         for key, value in enumerate(participants_data["data"]["event"]["entrants"]["nodes"]):
             del new_participant
-            new_participant = Participant(
-                value["participants"][0]["gamerTag"], value["participants"][0]["player"]["id"])
+            new_participant = Competitor(value["participants"][0]["playerId"],
+                                         value["participants"][0]["gamerTag"], listaTorneos["tournaments"])
             if new_participant.id not in self.participants_dict.keys():
-                new_participant.set_tournaments_list(listaTorneos["tournaments"])
-                self.participants.append(new_participant)
+                self.ranking.competitors.append(new_participant)
 
         self._update_participants_dict()
 
     def _get_tournament_events(self, tournaments, events):
         event_id_list = []
-        tournament_query = '''
-          query TournamentQuery($tournamentName: String) {
-            tournament(slug: $tournamentName){
-              id
-              name
-            events {
-                id
-                name
-              }
-            }
-          }
-        '''
+        tournament_query = queries.tournament_events_query()
         tournament_query_response = ''
         for tournament in tournaments:
             try:
@@ -319,9 +230,9 @@ if __name__ == "__main__":
     prueba = TournamentSetsRequest()
     prueba.get_tournament_sets(listaTorneos["tournaments"], listaTorneos["events"])
     file = ResultsWorkBook()
-    file.register_sets(prueba.sets)
+    file.register_sets(prueba.sets.get_sets())
     data = []
-    for participant in prueba.participants:
+    for participant in prueba.ranking.competitors:
         data.append(participant.as_dict())
     file.register_placings(data)
     file.save_workbook("haber.xlsx")
