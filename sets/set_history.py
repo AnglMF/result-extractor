@@ -5,7 +5,6 @@ class SetHistory:
     def __init__(self, player):
         self.__sets = []
         self.player = player
-        self.__sets_list = []
         self.__unsorted = False
         self.total_set_count = 0
 
@@ -23,12 +22,15 @@ class SetHistory:
         return self.get_sets_dict_list(sets_lost)
 
     def register_set(self, set_data):
-        if isinstance(set_data, Set):
-            self.__unsorted = True
-            self.__sets.append(set_data)
-            self.total_set_count += 1
-        else:
-            raise ValueError('Invalid set value')
+        try:
+            if isinstance(set_data, Set):
+                self.__unsorted = True
+                self.__sets.append(set_data)
+                self.total_set_count += 1
+            else:
+                raise ValueError
+        except ValueError:
+            print('Invalid set Value')
 
     def get_sets_vs(self, opponent):
         self.__sort_sets()
