@@ -19,13 +19,12 @@ class Ranking:
         self.competitors = []
         self.__qualified_competitors = []
         self.__unqualified_competitors = []
-        self.__total_competitors = []
         self.__unordered = True
 
     def sort_by_avg_placing(self):
         if self.__unordered:
             self.__unordered = False
-            sorted_list = sorted(self.competitors, key=lambda each_competitor: each_competitor.average)
+            sorted_list = sorted(self.competitors, key=lambda competitors: competitors.average)
             self.competitors = sorted_list
 
     def set_assistance_requirement(self, **kwargs):
@@ -41,7 +40,6 @@ class Ranking:
                     self.__qualified_competitors.append(competitor)
                 else:
                     self.__unqualified_competitors.append(competitor)
-        self.__total_competitors = self.competitors
         self.competitors = self.__qualified_competitors
 
     def get(self):
@@ -58,10 +56,9 @@ class Ranking:
                 for set in self.total_sets.sets:
                     if self.competitors[i].gamertag in set.get_players():
                         sets_to_register.append(set)
-                for set in sets_to_register:
-                    self.competitors[i].register_set(set)
+                        self.competitors[i].register_set(set)
         except IndexError:
-            print('Not Enough quelified competitors')
+            print('Not Enough qualified competitors')
 
 class ResultsWorkBook:
 
@@ -77,7 +74,7 @@ class ResultsWorkBook:
     def register_placings(self, info):
         self.worksheet = self.new_worksheet("Placings")
         df = pandas.DataFrame.from_dict(info)
-        df = df.sort_values("Avg Placing")
+        df = df.sort_values("avg_placing")
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
         for cell in self.worksheet['A'] + self.worksheet[1]:
@@ -87,7 +84,7 @@ class ResultsWorkBook:
     def register_sets(self, info):
         self.worksheet.title = "Sets Head 2 Head"
         df = pandas.DataFrame.from_dict(info)
-        orden = ["ScorePlayer1", "Player1", "Player2", "ScorePlayer2", "Tournament", "SetID"]
+        orden = ["score1", "p1", "p2", "score2", "tournament", "round", "winner"]
         df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
@@ -103,9 +100,9 @@ class ResultsWorkBook:
 
 
 class TournamentSetsRequest:
-    auth_token = 'YOUR TOKEN HERE'
-    events = []             # {event_id, tournament}
-    ranking = Ranking()      # Id, gamerTag, {tournament, placing}
+    auth_token = '026d66d8eeb4f1e73aa2ebe750388536'
+    events = []  # {event_id, tournament}
+    ranking = Ranking()
     participants_dict = {}
     sets = ranking.total_sets
     cache_responses = {}
@@ -142,7 +139,9 @@ class TournamentSetsRequest:
             self._get_event_sets(event)
             self._set_participant_placement_per_event(event)
             self._log("Participants with placings", self.ranking.competitors)
-
+        # self.ranking.set_assistance_requirement(tournament_number=3)
+        self.ranking.sort_by_avg_placing()
+        self.ranking.assign_set_history_for_top_15_players()
         self._log("cache", self.cache_responses)
 
     def _create_set_entry(self, raw_data, tournament):
@@ -151,6 +150,7 @@ class TournamentSetsRequest:
         if set_entry.score1 >= 0 and set_entry.score2 >= 0:
             # DQs are marked on smash.gg as game count -1, so don't include DQs
             self.sets.register_set(set_entry)
+            del set_entry
 
     def _get_event_sets(self, event):
         page_number = 1
@@ -168,14 +168,17 @@ class TournamentSetsRequest:
             event_sets = self._post("event sets", event_sets_query, {"eventID": event["event_id"],
                                                                      "page_number": page_number,
                                                                      "per_page": per_page})
-            for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
-                self._create_set_entry(value, event["tournament"])
-            sets_registered += per_page
+            try:
+                for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
+                    self._create_set_entry(value, event["tournament"])
+                sets_registered += per_page
+            except TypeError:
+                pass
 
     def set_participant_placement(self, participant_id, event, placement):
         for nemo_participant in self.ranking.competitors:
             if nemo_participant.id == participant_id:
-                nemo_participant.register_placing((event["tournament"], placement))
+                nemo_participant.register_placing(event["tournament"], placement)
 
     def _set_participant_placement_per_event(self, event):
         response = self._get_event_standings(event)
@@ -191,16 +194,14 @@ class TournamentSetsRequest:
 
     def _get_event_participants(self, event):
         event_participants_query = queries.event_participants_query()
-        participants_response = self._post("event participants", event_participants_query,
+        participants_data = self._post("event participants", event_participants_query,
                                            {"eventID": event["event_id"]})
-        participants_data = participants_response
-        new_participant = None
         for key, value in enumerate(participants_data["data"]["event"]["entrants"]["nodes"]):
-            del new_participant
             new_participant = Competitor(value["participants"][0]["playerId"],
                                          value["participants"][0]["gamerTag"], listaTorneos["tournaments"])
             if new_participant.id not in self.participants_dict.keys():
                 self.ranking.competitors.append(new_participant)
+            del new_participant
 
         self._update_participants_dict()
 
@@ -212,13 +213,14 @@ class TournamentSetsRequest:
             try:
                 tournament_query_response = self._post("tournament events", tournament_query,
                                                        {"tournamentName": tournament})
-                event_found = 0
+                event_found = False
                 self._log('Looking for events:\n{events}'.format(events=events), '')
                 for key, value in enumerate(tournament_query_response["data"]["tournament"]["events"]):
                     self._log("'{ev}' event on {t}".format(ev=value["name"], t=tournament), '')
                     if value["name"] in events:
                         event_id_list.append({"event_id": value["id"], "tournament": tournament})
-                        event_found = 1
+                        event_found = True
+                        break
                 if not event_found:
                     self._log('Not all events found on {tournament}'.format(tournament=tournament), '-----------------')
             except ValueError:

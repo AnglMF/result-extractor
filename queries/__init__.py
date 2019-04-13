@@ -24,8 +24,7 @@ def event_sets_query():
                     entrant{
                       participants{
                         playerId
-                        name
-                        }
+                        gamerTag
                       }
                     }
                   }
@@ -87,7 +86,7 @@ def tournament_events_query():
             tournament(slug: $tournamentName){
               id
               name
-            events {
+              events {
                 id
                 name
               }

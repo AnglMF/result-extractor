@@ -16,7 +16,7 @@ class SetTest(unittest.TestCase):
                 "participants": [
                     {
                         "player": {
-                            "name": "GoodPlayer",
+                            "gamerTag": "GoodPlayer",
                             "id": 1
                         }
                     }
@@ -35,7 +35,7 @@ class SetTest(unittest.TestCase):
                 "participants": [
                     {
                         "player": {
-                            "name": "BadPlayer",
+                            "gamerTag": "BadPlayer",
                             "id": 2
                         }
                     }
