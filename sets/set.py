@@ -1,15 +1,18 @@
 class Set:
     def __init__(self, set_dict, tournament):
-        self.player1 = set_dict["slots"][0]["entrant"]["participants"][0]["gamerTag"]
-        self.player2 = set_dict["slots"][1]["entrant"]["participants"][0]["gamerTag"]
-        self.player1_id = set_dict["slots"][0]["entrant"]["participants"][0]["playerId"]
-        self.player2_id = set_dict["slots"][1]["entrant"]["participants"][0]["playerId"]
-        self.score1 = set_dict["slots"][0]["standing"]["stats"]["score"]["value"]
-        self.score2 = set_dict["slots"][1]["standing"]["stats"]["score"]["value"]
-        self.set_id = set_dict["id"]
-        self.tournament = tournament
-        self.winner = self.__get_winner(set_dict["slots"][0]["standing"]["placement"])
-        self.round = abs(set_dict["round"])
+        try:
+            self.player1 = set_dict["slots"][0]["entrant"]["participants"][0]["gamerTag"]
+            self.player2 = set_dict["slots"][1]["entrant"]["participants"][0]["gamerTag"]
+            self.player1_id = set_dict["slots"][0]["entrant"]["participants"][0]["playerId"]
+            self.player2_id = set_dict["slots"][1]["entrant"]["participants"][0]["playerId"]
+            self.score1 = set_dict["slots"][0]["standing"]["stats"]["score"]["value"]
+            self.score2 = set_dict["slots"][1]["standing"]["stats"]["score"]["value"]
+            self.set_id = set_dict["id"]
+            self.tournament = tournament
+            self.winner = self.__get_winner(set_dict["slots"][0]["standing"]["placement"])
+            self.round = abs(set_dict["round"])
+        except TypeError:
+            print("There's an error with the Set data entry")
 
     def get_players(self):
         return [self.player1, self.player2]
@@ -32,5 +35,3 @@ class Set:
         set_as_dict["round"] = self.round
         return set_as_dict
 
-    def get_round(self):
-        return abs(self.round)

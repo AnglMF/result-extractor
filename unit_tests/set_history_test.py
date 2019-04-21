@@ -16,10 +16,8 @@ class SetHistoryTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "GoodPlayer",
-                            "id": 1
-                        }
+                        "gamerTag": "GoodPlayer",
+                        "playerId": 1
                     }
                 ]
             }
@@ -35,10 +33,8 @@ class SetHistoryTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "GreatPlayer",
-                            "id": 3
-                        }
+                        "gamerTag": "GreatPlayer",
+                        "playerId": 3
                     }
                 ]
             }
@@ -57,10 +53,8 @@ class SetHistoryTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "GoodPlayer",
-                            "id": 1
-                        }
+                        "gamerTag": "GoodPlayer",
+                        "playerId": 1
                     }
                 ]
             }
@@ -76,10 +70,8 @@ class SetHistoryTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "BadPlayer",
-                            "id": 2
-                        }
+                        "gamerTag": "BadPlayer",
+                        "playerId": 2
                     }
                 ]
             }
@@ -98,10 +90,8 @@ class SetHistoryTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "GoodPlayer",
-                            "id": 1
-                        }
+                        "gamerTag": "GoodPlayer",
+                        "playerId": 1
                     }
                 ]
             }
@@ -117,10 +107,8 @@ class SetHistoryTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "BadPlayer",
-                            "id": 2
-                        }
+                        "gamerTag": "BadPlayer",
+                        "playerId": 2
                     }
                 ]
             }
@@ -168,13 +156,13 @@ class SetHistoryTest(unittest.TestCase):
     def test_returns_list_of_set_dictionares(self):
         expected_value = [
             {"score1": 3, "p1": "GoodPlayer", "score2": 1, "p2": "BadPlayer", "winner": "GoodPlayer",
-            "round": 4},
+            "round": 4, "tournament": "tournament2"},
             {"score1": 3, "p1": "GoodPlayer", "score2": 0, "p2": "BadPlayer", "winner": "GoodPlayer",
-            "round": 2},
+            "round": 2, "tournament": "tournament3"},
             {"score1": 0, "p1": "GoodPlayer", "score2": 2, "p2": "GreatPlayer", "winner": "GreatPlayer",
-            "round": 1}
+            "round": 1, "tournament": "tournament1"}
         ]
-        assert self.set_history.get_sets() == expected_value
+        self.assertEqual(expected_value, self.set_history.get_sets())
 
     def test_get_correct_win_percentage(self):
         assert self.set_history.get_win_percentage() == 2/3

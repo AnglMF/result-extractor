@@ -48,10 +48,8 @@ class RankingTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "player1",
-                            "id": 1
-                        }
+                        "gamerTag": "player1",
+                        "playerId": 1
                     }
                 ]
             }
@@ -67,10 +65,8 @@ class RankingTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "player2",
-                            "id": 3
-                        }
+                        "gamerTag": "player2",
+                        "playerId": 3
                     }
                 ]
             }
@@ -89,10 +85,8 @@ class RankingTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "player1",
-                            "id": 1
-                        }
+                        "gamerTag": "player1",
+                        "playerId": 1
                     }
                 ]
             }
@@ -108,10 +102,8 @@ class RankingTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "player3",
-                            "id": 2
-                        }
+                        "gamerTag": "player3",
+                        "playerId": 3
                     }
                 ]
             }
@@ -130,10 +122,8 @@ class RankingTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "player3",
-                            "id": 1
-                        }
+                        "gamerTag": "player3",
+                        "playerId": 1
                     }
                 ]
             }
@@ -149,10 +139,8 @@ class RankingTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "player4",
-                            "id": 2
-                        }
+                        "gamerTag": "player4",
+                        "playerId": 2
                     }
                 ]
             }

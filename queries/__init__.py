@@ -7,7 +7,7 @@ def event_sets_query():
                 perPage: $per_page
               ){
                 pageInfo{
-                  total
+                    total
                 }
                 nodes{
                   id
@@ -38,24 +38,26 @@ def event_sets_query():
 def event_standings_query():
     return '''
             query EventParticipants($eventID: ID){
-            event(id:$eventID){
-              standings(query: {
-                page:1
-                perPage: 150
-              }){
-                nodes{
-                  entrant{
-                    participants{
-                      player{
-                        id
+                event(id:$eventID){
+                  standings(query: {
+                    page:1
+                    perPage: 150
+                  }){
+                    pageInfo{
+                      total
+                    }
+                    nodes{
+                      entrant{
+                        participants{
+                          playerId
+                          gamerTag
+                        }
                       }
+                      placement
                     }
                   }
-                  placement
                 }
               }
-            }
-          }
         '''
 
 

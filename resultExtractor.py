@@ -100,7 +100,7 @@ class ResultsWorkBook:
 
 
 class TournamentSetsRequest:
-    auth_token = 'YOUR TOKEN HERE'
+    auth_token = '026d66d8eeb4f1e73aa2ebe750388536'
     events = []  # {event_id, tournament}
     ranking = Ranking()
     participants_dict = {}
@@ -183,7 +183,7 @@ class TournamentSetsRequest:
     def _set_participant_placement_per_event(self, event):
         response = self._get_event_standings(event)
         for key, value in enumerate(response["data"]["event"]["standings"]["nodes"]):
-            self.set_participant_placement(value["entrant"]["participants"][0]["player"]["id"], event,
+            self.set_participant_placement(value["entrant"]["participants"][0]["playerId"], event,
                                            value["placement"])
 
     def _get_event_standings(self, event):

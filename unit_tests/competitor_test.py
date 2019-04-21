@@ -19,10 +19,8 @@ class CompetitorTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "GoodPlayer",
-                            "id": 1
-                        }
+                        "gamerTag": "GoodPlayer",
+                        "playerId": 1
                     }
                 ]
             }
@@ -38,10 +36,8 @@ class CompetitorTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "name": "GreatPlayer",
-                            "id": 3
-                        }
+                        "gamerTag": "GreatPlayer",
+                        "playerId": 3
                     }
                 ]
             }

@@ -1,9 +1,8 @@
 tournaments:
-  - xtr-ultimate-tournament
-  - xtr-ultimate-tournaments-2
-  - xtr-ultimate-tournaments-3
-  - xtr-ultimate-tournaments-4
-  - xtr-ultimate-tournaments-5
+  - border-league-round-3-melee-1-0
+  - border-league-round-3-melee-2-0
+  - border-league-round-3-melee-3-0
+  - border-league-round-3-melee-4-0
 
 events:
-  -'Smash Ultimate Singles'
+  -'Melee Singles'

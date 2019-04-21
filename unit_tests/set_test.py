@@ -15,10 +15,8 @@ class SetTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "gamerTag": "GoodPlayer",
-                            "id": 1
-                        }
+                        "gamerTag": "GoodPlayer",
+                        "playerId": 1
                     }
                 ]
             }
@@ -34,10 +32,8 @@ class SetTest(unittest.TestCase):
                 }, "entrant": {
                 "participants": [
                     {
-                        "player": {
-                            "gamerTag": "BadPlayer",
-                            "id": 2
-                        }
+                        "gamerTag": "BadPlayer",
+                        "playerId": 2
                     }
                 ]
             }
@@ -54,8 +50,8 @@ class SetTest(unittest.TestCase):
 
     def test_returns_dictionary_with_set_information(self):
         expected_dict_value = {"score1": 0, "p1": "GoodPlayer", "score2": 2, "p2": "BadPlayer", "winner": "BadPlayer",
-                               "round": 1}
-        assert self.mock_set.as_dict() == expected_dict_value
+                               "round": 1, "tournament": "tournament1"}
+        self.assertEqual(expected_dict_value, self.mock_set.as_dict())
 
     def test_returns_set_round_with_no_sign(self):
         mock_set_data = {
@@ -70,10 +66,8 @@ class SetTest(unittest.TestCase):
                     }, "entrant": {
                     "participants": [
                         {
-                            "player": {
-                                "name": "GoodPlayer",
-                                "id": 1
-                            }
+                            "gamerTag": "GoodPlayer",
+                            "playerId": 1
                         }
                     ]
                 }
@@ -89,10 +83,8 @@ class SetTest(unittest.TestCase):
                     }, "entrant": {
                     "participants": [
                         {
-                            "player": {
-                                "name": "BadPlayer",
-                                "id": 2
-                            }
+                            "gamerTag": "BadPlayer",
+                            "playerId": 2
                         }
                     ]
                 }
@@ -100,4 +92,4 @@ class SetTest(unittest.TestCase):
             ]
         }
         mock_set_negative_round = Set(mock_set_data, 'tournament2')
-        assert mock_set_negative_round.get_round() == 3
+        assert mock_set_negative_round.round == 3
