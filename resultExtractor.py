@@ -72,6 +72,8 @@ class ResultsWorkBook:
         self.worksheet = self.new_worksheet("Placings")
         df = pandas.DataFrame.from_dict(info)
         df = df.sort_values("avg_placing")
+        orden = ["id", "avg_placing", "name"] + listaTorneos['tournaments']
+        df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
         for cell in self.worksheet['A'] + self.worksheet[1]:
