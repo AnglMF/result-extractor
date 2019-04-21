@@ -66,3 +66,6 @@ class Competitor:
 
     def win_percentage(self):
         return self.__sets.get_win_percentage()
+
+    def __str__(self):
+        return self.gamertag + self.id

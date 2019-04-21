@@ -32,14 +32,15 @@ class Query:
     def query_event_standings(self, event):
         request_body = queries.event_standings_query()
         response = self._post(request_body, {'eventID': event})
-        participant = {}
         participants_standings_list = []
         total_participants = response['data']['event']['standings']['pageInfo']['total']
         for key, value in enumerate(response['data']['event']['standings']['nodes']):
+            participant = {}
             participant['id'] = value["entrant"]["participants"][0]["playerId"]
             participant['name'] = value["entrant"]["participants"][0]["gamerTag"]
             participant['placement'] = value['placement']
             participants_standings_list.append(participant)
+            del participant
         return participants_standings_list, total_participants
 
     def query_event_sets(self, tournament, event_id):

@@ -4,5 +4,4 @@ tournaments:
   - border-league-round-3-melee-3-0
   - border-league-round-3-melee-4-0
 
-events:
-  -'Melee Singles'
+event: Melee Singles
