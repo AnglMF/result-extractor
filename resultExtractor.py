@@ -1,4 +1,3 @@
-from graphqlclient import GraphQLClient
 from yaml import load
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
@@ -6,12 +5,9 @@ from openpyxl.styles import Alignment
 
 from competitor.competitor import Competitor
 from sets.set_history import SetHistory
-from sets.set import Set
 from queries.queries import Query
-import queries
 
 import pandas
-import json
 
 
 class Ranking:
