@@ -57,8 +57,8 @@ class Ranking:
         except IndexError:
             print('Not Enough qualified competitors')
 
-class ResultsWorkBook:
 
+class ResultsWorkBook:
     def __init__(self):
         self.workbook = Workbook()
         self.worksheet = self.workbook.active
@@ -78,7 +78,6 @@ class ResultsWorkBook:
             self.worksheet.append(r)
         for cell in self.worksheet['A'] + self.worksheet[1]:
             cell.style = 'Pandas'
-        print(df)
 
     def register_sets(self, info):
         self.worksheet.title = "Sets Head 2 Head"
@@ -89,7 +88,6 @@ class ResultsWorkBook:
             self.worksheet.append(r)
         for cell in self.worksheet['A'] + self.worksheet[1]:
             cell.style = 'Pandas'
-        print(df)
 
     def save_workbook(self, name):
         self.workbook.save(name)
@@ -102,18 +100,12 @@ class TournamentSetsRequest:
     auth_token = 'YOUR TOKEN'
     events = {}  # tournament: event_id
     ranking = Ranking()
-    participants_dict = {}
+    participants_dict = {}  # participant, competitor_object
     sets = ranking.total_sets
     client = Query(auth_token)
 
     def _log(self, _message, _object):
         print('{msg}:\n{obj}'.format(msg=_message, obj=_object))
-
-    def _update_participants_dict(self):
-        udpated_dict = {}
-        for registered_participant in self.ranking.competitors:
-            udpated_dict[registered_participant.id] = registered_participant.gamertag
-        self.participants_dict = udpated_dict
 
     def get_tournament_sets(self, tournaments, event):
         self.events = self.client.query_tournament_events(tournaments, event)
@@ -122,9 +114,6 @@ class TournamentSetsRequest:
             self._log("Participant list", self.ranking.competitors)
             self._get_event_sets(tournament, event)
             self._log("Participants with placings", self.ranking.competitors)
-        # self.ranking.set_assistance_requirement(tournament_number=3)
-        self.ranking.sort_by_avg_placing()
-        self.ranking.assign_set_history_for_top_15_players()
 
     def _get_event_sets(self, tournament, event):
         event_sets = self.client.query_event_sets(tournament, event)
@@ -132,20 +121,16 @@ class TournamentSetsRequest:
             self.sets.register_set(set)
         self._log('Event sets: ', event_sets)
 
-    def set_participant_placement(self, participant_id, tournament, placement):
-        for nemo_participant in self.ranking.competitors:
-            if nemo_participant.id == participant_id:
-                nemo_participant.register_placing(tournament, placement)
-
     def _get_event_participants(self, tournament, event):
         event_participants, total_participants = self.client.query_event_standings(event)
         for participant in event_participants:
-            new_participant = Competitor(participant['id'], participant['name'], self.events.keys())
-            if new_participant.id not in self.participants_dict.keys():
-                self.ranking.competitors.append(new_participant)
-            self.set_participant_placement(participant['id'], tournament, participant['placement'])
-            del new_participant
-        self._update_participants_dict()
+            if participant['id'] not in self.participants_dict.keys():
+                new_competitor = Competitor(participant['id'], participant['name'], self.events.keys())
+                new_competitor.register_placing(tournament, participant['placement'])
+                self.ranking.competitors.append(new_competitor)
+                self.participants_dict[participant['id']] = new_competitor
+            else:
+                self.participants_dict[participant['id']].register_placing(tournament, participant['placement'])
 
 
 if __name__ == "__main__":
