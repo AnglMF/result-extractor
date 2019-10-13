@@ -54,10 +54,13 @@ class Query:
                                                "per_page": per_page})
         total_sets = event_sets["data"]["event"]["sets"]["pageInfo"]["total"]
         for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
-            set_entry = Set(value, tournament)
-            if self._is_dq(set_entry):
-                sets.append(set_entry)
-                del set_entry
+            try:
+                set_entry = Set(value, tournament)
+                if self._is_dq(set_entry):
+                    sets.append(set_entry)
+                    del set_entry
+            except TypeError:
+                print('invalid set')
         sets_registered += per_page
         while not sets_registered > total_sets:
             page_number += 1
