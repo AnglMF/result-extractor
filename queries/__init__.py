@@ -52,6 +52,9 @@ def event_standings_query():
                           playerId
                           gamerTag
                         }
+                        seeds{
+                          seedNum
+                        }
                       }
                       placement
                     }
