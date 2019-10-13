@@ -6,7 +6,7 @@ import unittest
 
 
 class QueryTest(unittest.TestCase):
-    client = Query('026d66d8eeb4f1e73aa2ebe750388536')
+    client = Query('YOUR TOKEN HERE')
 
     # test for invalid token
     def test_fails_when_invalid_token_injected(self):
