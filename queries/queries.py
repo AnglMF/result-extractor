@@ -39,6 +39,7 @@ class Query:
             participant['id'] = value["entrant"]["participants"][0]["playerId"]
             participant['name'] = value["entrant"]["participants"][0]["gamerTag"]
             participant['placement'] = value['placement']
+            participant['seed'] = value["entrant"]["seeds"][0]["seedNum"]
             participants_standings_list.append(participant)
             del participant
         return participants_standings_list, total_participants
@@ -59,7 +60,7 @@ class Query:
                 if self._is_dq(set_entry):
                     sets.append(set_entry)
                     del set_entry
-            except TypeError:
+            except AttributeError:
                 print('invalid set')
         sets_registered += per_page
         while not sets_registered > total_sets:
