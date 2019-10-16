@@ -9,8 +9,6 @@ from queries.queries import Query
 
 import pandas
 
-POSSIBLE_PLACINGS = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (7, 6), (9, 7), (13, 8), (17, 9), (25, 10), (33, 11),
-                     (49, 12), (65, 13), (97, 14), (129, 15)]
 
 class Ranking:
     def __init__(self):
@@ -98,7 +96,6 @@ class ResultsWorkBook:
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
 
-
     def register_sets(self, info):
         self.worksheet.title = "Sets Head 2 Head"
         df = pandas.DataFrame.from_dict(info)
@@ -152,13 +149,14 @@ class TournamentSetsRequest:
         for participant in event_participants:
             if participant['id'] not in self.participants_dict.keys():
                 new_competitor = Competitor(participant['id'], participant['name'], self.events.keys())
-                new_competitor.register_placing(tournament, {"Placing": participant['placement'],
-                                                             "Seed": participant['seed']})
+                new_competitor.register_placing(tournament, {"placing": participant['placement'],
+                                                             "seed": participant['seed']})
                 self.ranking.competitors.append(new_competitor)
                 self.participants_dict[participant['id']] = new_competitor
             else:
-                self.participants_dict[participant['id']].register_placing(tournament, {"Placing": participant['placement'],
-                                                                                        "Seed": participant['seed']})
+                self.participants_dict[participant['id']].register_placing(tournament,
+                                                                           {"placing": participant['placement'],
+                                                                            "seed": participant['seed']})
 
 
 if __name__ == "__main__":

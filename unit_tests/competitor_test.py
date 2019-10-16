@@ -48,12 +48,15 @@ class CompetitorTest(unittest.TestCase):
 
     def test_return_attendance(self):
         placings = self.mock_competitor.placings
-        expected_placings = {'tournament1': 3, 'tournament2': '-', 'tournament3': 1, 'tournament4': '-'}
+        expected_placings = {'tournament1': {'placing': 3, 'seed': 3}, 'tournament2': {'placing': '-',
+                                                                                       'seed': '-'},
+                             'tournament3': {'placing': 1, 'seed': 1}, 'tournament4': {'placing': '-',
+                                                                                       'seed': '-'}}
         assert expected_placings == placings
 
     def test_calculates_average_placing_correctly(self):
-        self.mock_competitor.register_placing('tournament1', 3)
-        self.mock_competitor.register_placing('tournament3', 1)
+        self.mock_competitor.register_placing('tournament1', {'placing': 3, 'seed': 3})
+        self.mock_competitor.register_placing('tournament3', {'placing': 1, 'seed': 1})
         assert self.mock_competitor.average == 2
 
     def test_return_tournament_attendance(self):
@@ -69,6 +72,9 @@ class CompetitorTest(unittest.TestCase):
 
     def test_return_list_with_sets_found(self):
         assert self.mock_competitor.sets('vs', opponent='GreatPlayer') == [self.mock_set1.as_dict()]
+
+    def test_calculate_difference_results(self):
+        assert self.mock_competitor.calculate_difference(9, 7) == '+1'
 
     def test_fails_when_invalid_option_on_set_request(self):
         try:

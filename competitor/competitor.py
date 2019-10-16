@@ -23,8 +23,8 @@ class Competitor:
         self.assistance_percentage = self.tournaments_assisted/len(self.placings.keys()) * 100
 
     def register_placing(self, tournament, placing):
-        self.placings[tournament]['placing'] = placing["Placing"]
-        self.placings[tournament]['seed'] = placing["Seed"]
+        self.placings[tournament]['placing'] = placing["placing"]
+        self.placings[tournament]['seed'] = placing["seed"]
         self.tournaments_assisted += 1
         self.__calculate_attendance()
         self.__get_avg_placing()
@@ -68,8 +68,6 @@ class Competitor:
                                                                                 self.placings[tournament]["placing"])
         return competitor_dict
 
-
-
     def __get_main_data(self):
         competitor_dict = {}
         print(self.gamertag)
@@ -77,7 +75,6 @@ class Competitor:
         competitor_dict['name'] = self.gamertag
         competitor_dict['avg_placing'] = self.average
         return competitor_dict
-
 
     def as_dict(self):
         competitor_dict = self.__get_main_data()
