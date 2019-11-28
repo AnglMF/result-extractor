@@ -40,6 +40,24 @@ class SetHistory:
         else:
             return self.get_sets_dict_list(sets_h2h)
 
+    def get_set_record_vs(self, opponent):
+        ret = ""
+        try:
+            sets = [set for set in self.sets if opponent in set.get_players()]
+            won = 0
+            lost = 0
+            for set in sets:
+                if set.winner == opponent:
+                    lost += 1
+                else:
+                    won += 1
+            if not(won == 0 and lost == 0):
+                ret = str(won) + "-" + str(lost)
+        except ValueError:
+            pass
+        finally:
+            return ret
+
     def __sort_sets(self):
         if self.__unsorted:
             self.__unsorted = False

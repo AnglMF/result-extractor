@@ -55,9 +55,9 @@ class Ranking:
         sorted_list = sorted(competitor_list, key=lambda competitors: competitors[tournament + " placing"])
         return sorted_list
 
-    def assign_set_history_for_top_15_players(self):
+    def assign_set_history_for_top_players(self, playerNumber):
         try:
-            for i in range(0, 14):
+            for i in range(0, playerNumber):
                 sets_to_register = []
                 for set in self.total_sets.sets:
                     if self.competitors[i].gamertag in set.get_players():
@@ -65,6 +65,17 @@ class Ranking:
                         self.competitors[i].register_set(set)
         except IndexError:
             print('Not Enough qualified competitors')
+
+    def get_h2h_record(self):
+        self.assign_set_history_for_top_players(len(self.competitors))
+        player_records = []
+        for competitor1 in self.competitors:
+            player_record_dictionary = {'player': competitor1.gamertag}
+            for competitor2 in self.competitors:
+                if competitor1 != competitor2:
+                    player_record_dictionary[competitor2.gamertag] = competitor1.record_vs(competitor2.gamertag)
+            player_records.append(player_record_dictionary)
+        return player_records
 
 
 class ResultsWorkBook:
@@ -87,6 +98,17 @@ class ResultsWorkBook:
             self.worksheet.append(r)
         for cell in self.worksheet['A'] + self.worksheet[1]:
             cell.style = 'Pandas'
+
+    def register_h2h(self, info):
+        self.worksheet = self.new_worksheet("H2H")
+        df = pandas.DataFrame.from_dict(info)
+        player_list = []
+        for competitor in info:
+            player_list.append(competitor["player"])
+        orden = ["player"] + player_list
+        df = df.reindex(columns=orden)
+        for r in dataframe_to_rows(df, index=True, header=True):
+            self.worksheet.append(r)
 
     def register_tournament_results(self, tournament, participants):
         df = pandas.DataFrame.from_dict(participants)
@@ -114,7 +136,7 @@ class ResultsWorkBook:
 
 
 class TournamentSetsRequest:
-    auth_token = 'YOUR TOKEN'
+    auth_token = 'YOUR TOKEN HERE'
     events = {}  # tournament: event_id
     ranking = Ranking()
     participants_dict = {}  # participant, competitor_object
@@ -165,6 +187,7 @@ if __name__ == "__main__":
     prueba.get_all_sets(listaTorneos["tournaments"], listaTorneos["event"])
     file = ResultsWorkBook()
     file.register_sets(prueba.sets.get_sets())
+    file.register_h2h(prueba.ranking.get_h2h_record())
     data = []
     for participant in prueba.ranking.competitors:
         data.append(participant.as_dict())

@@ -85,6 +85,9 @@ class Competitor:
     def win_percentage(self):
         return self.__sets.get_win_percentage()
 
+    def record_vs(self, opponent):
+        return self.__sets.get_set_record_vs(opponent)
+
     def calculate_difference(self, seed, placement):
         expected = 0
         previous = 0
