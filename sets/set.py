@@ -34,4 +34,3 @@ class Set:
         set_as_dict['tournament'] = self.tournament
         set_as_dict["round"] = self.round
         return set_as_dict
-

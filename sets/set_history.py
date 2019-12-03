@@ -13,12 +13,12 @@ class SetHistory:
 
     def get_sets_won(self):
         self.__sort_sets()
-        sets_won = [set for set in self.sets if self.player == set.winner]
+        sets_won = [_set for _set in self.sets if self.player == _set.winner]
         return self.get_sets_dict_list(sets_won)
 
     def get_sets_lost(self):
         self.__sort_sets()
-        sets_lost = [set for set in self.sets if not self.player == set.winner]
+        sets_lost = [_set for _set in self.sets if not self.player == _set.winner]
         return self.get_sets_dict_list(sets_lost)
 
     def register_set(self, set_object):
@@ -34,7 +34,7 @@ class SetHistory:
 
     def get_sets_vs(self, opponent):
         self.__sort_sets()
-        sets_h2h = [set for set in self.sets if opponent in set.get_players()]
+        sets_h2h = [_set for _set in self.sets if opponent in _set.get_players()]
         if not sets_h2h:
             raise ValueError('No sets vs specified player: {op}'.format(op=opponent))
         else:
@@ -43,11 +43,11 @@ class SetHistory:
     def get_set_record_vs(self, opponent):
         ret = ""
         try:
-            sets = [set for set in self.sets if opponent in set.get_players()]
+            sets = [_set for _set in self.sets if opponent in _set.get_players()]
             won = 0
             lost = 0
-            for set in sets:
-                if set.winner == opponent:
+            for _set in sets:
+                if _set.winner == opponent:
                     lost += 1
                 else:
                     won += 1
@@ -70,6 +70,6 @@ class SetHistory:
     def get_sets_dict_list(self, set_list):
         self.__sort_sets()
         requested_sets_as_dict_list = []
-        for set in set_list:
-            requested_sets_as_dict_list.append(set.as_dict())
+        for _set in set_list:
+            requested_sets_as_dict_list.append(_set.as_dict())
         return requested_sets_as_dict_list

@@ -5,6 +5,13 @@ import queries
 import json
 
 
+def is_dq(_set):
+    if _set.score1 >= 0 and _set.score2 >= 0:
+        return True
+    else:
+        return False
+
+
 class Query:
     def __init__(self, token):
         self.client = GraphQLClient('https://api.smash.gg/gql/alpha')
@@ -57,7 +64,7 @@ class Query:
         for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
             try:
                 set_entry = Set(value, tournament)
-                if self._is_dq(set_entry):
+                if is_dq(set_entry):
                     sets.append(set_entry)
                     del set_entry
             except AttributeError:
@@ -71,16 +78,10 @@ class Query:
             for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
                 set_entry = Set(value, tournament)
                 try:
-                    if self._is_dq(set_entry):
+                    if is_dq(set_entry):
                         sets.append(set_entry)
                         del set_entry
                 except AttributeError:
                     print('invalid set')
             sets_registered += per_page
         return sets
-
-    def _is_dq(self, set):
-        if set.score1 >= 0 and set.score2 >= 0:
-            return True
-        else:
-            return False
