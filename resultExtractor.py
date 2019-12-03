@@ -10,6 +10,10 @@ from queries.queries import Query
 import pandas
 
 
+def log(_message, _object):
+    print('{msg}:\n{obj}'.format(msg=_message, obj=_object))
+
+
 class Ranking:
     def __init__(self):
         self.total_sets = SetHistory('Global')
@@ -43,26 +47,26 @@ class Ranking:
         self.sort_by_avg_placing()
         competitor_list = []
         for competitor in self.competitors:
-            competitor_list.append(competitor.as_dict())
+            competitor_list.append(competitor.get_all_placings())
         return competitor_list
 
     def get_single_tournament_results(self, tournament):
         competitor_list = []
         for competitor in self.competitors:
-            competitor_dict = competitor.get_single_tournament_result(tournament)
+            competitor_dict = competitor.get_tournament_result(tournament)
             if not competitor_dict[tournament + " placing"] == '-':
                 competitor_list.append(competitor_dict)
         sorted_list = sorted(competitor_list, key=lambda competitors: competitors[tournament + " placing"])
         return sorted_list
 
-    def assign_set_history_for_top_players(self, playerNumber):
+    def assign_set_history_for_top_players(self, player_number):
         try:
-            for i in range(0, playerNumber):
+            for i in range(0, player_number):
                 sets_to_register = []
-                for set in self.total_sets.sets:
-                    if self.competitors[i].gamertag in set.get_players():
-                        sets_to_register.append(set)
-                        self.competitors[i].register_set(set)
+                for _set in self.total_sets.sets:
+                    if self.competitors[i].gamertag in _set.get_players():
+                        sets_to_register.append(_set)
+                        self.competitors[i].register_set(_set)
         except IndexError:
             print('Not Enough qualified competitors')
 
@@ -92,7 +96,7 @@ class ResultsWorkBook:
         self.worksheet = self.new_worksheet("Placings")
         df = pandas.DataFrame.from_dict(info)
         df = df.sort_values("avg_placing")
-        orden = ["id", "avg_placing", "name"] + listaTorneos['tournaments']
+        orden = ["id", "avg_placing", "name"] + tournamentList['tournaments']
         df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
@@ -143,15 +147,12 @@ class TournamentSetsRequest:
     sets = ranking.total_sets
     client = Query(auth_token)
 
-    def _log(self, _message, _object):
-        print('{msg}:\n{obj}'.format(msg=_message, obj=_object))
-
     def __get_events_sets(self, events):
         for tournament, event in events:
             self._get_event_participants(tournament, event)
-            self._log("Participant list", self.ranking.competitors)
+            log("Participant list", self.ranking.competitors)
             self._get_event_sets(tournament, event)
-            self._log("Participants with placings", self.ranking.competitors)
+            log("Participants with placings", self.ranking.competitors)
 
     def __get_tournament_events(self, tournaments, event):
         self.events = self.client.query_tournament_events(tournaments, event)
@@ -164,7 +165,7 @@ class TournamentSetsRequest:
         event_sets = self.client.query_event_sets(tournament, event)
         for set in event_sets:
             self.sets.register_set(set)
-        self._log('Event sets: ', event_sets)
+        log('Event sets: ', event_sets)
 
     def _get_event_participants(self, tournament, event):
         event_participants, total_participants = self.client.query_event_standings(event)
@@ -182,18 +183,18 @@ class TournamentSetsRequest:
 
 
 if __name__ == "__main__":
-    listaTorneos = load(open("tournamentList.yml", "r"))
+    tournamentList = load(open("tournamentList.yml", "r"))
     prueba = TournamentSetsRequest()
-    prueba.get_all_sets(listaTorneos["tournaments"], listaTorneos["event"])
+    prueba.get_all_sets(tournamentList["tournaments"], tournamentList["event"])
     file = ResultsWorkBook()
     file.register_sets(prueba.sets.get_sets())
     file.register_h2h(prueba.ranking.get_h2h_record())
-    data = []
+    participants_placings = []
     for participant in prueba.ranking.competitors:
-        data.append(participant.as_dict())
-    file.register_placings(data)
+        participants_placings.append(participant.get_all_placings())
+    file.register_placings(participants_placings)
     data = []
-    for tournament in listaTorneos["tournaments"]:
+    for tournament in tournamentList["tournaments"]:
         data = prueba.ranking.get_single_tournament_results(tournament)
         file.register_tournament_results(tournament, data)
     file.save_workbook("haber.xlsx")

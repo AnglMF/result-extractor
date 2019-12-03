@@ -46,13 +46,13 @@ class RankingTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "player1",
-                        "playerId": 1
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "player1",
+                            "playerId": 1
+                        }
+                    ]
+                }
             },
             {
                 "standing": {
@@ -63,13 +63,13 @@ class RankingTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "player2",
-                        "playerId": 3
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "player2",
+                            "playerId": 3
+                        }
+                    ]
+                }
             }
         ]
     }
@@ -83,13 +83,13 @@ class RankingTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "player1",
-                        "playerId": 1
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "player1",
+                            "playerId": 1
+                        }
+                    ]
+                }
             },
             {
                 "standing": {
@@ -100,13 +100,13 @@ class RankingTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "player3",
-                        "playerId": 3
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "player3",
+                            "playerId": 3
+                        }
+                    ]
+                }
             }
         ]
     }
@@ -120,13 +120,13 @@ class RankingTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "player3",
-                        "playerId": 1
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "player3",
+                            "playerId": 1
+                        }
+                    ]
+                }
             },
             {
                 "standing": {
@@ -137,13 +137,13 @@ class RankingTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "player4",
-                        "playerId": 2
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "player4",
+                            "playerId": 2
+                        }
+                    ]
+                }
             }
         ]
     }
@@ -152,24 +152,24 @@ class RankingTest(unittest.TestCase):
     mock_set3 = Set(mock_set3_data, 't2')
 
     def test_returns_sorted_list_by_average_placing(self):
-        expected_list = [self.mock_competitor1.as_dict(),
-                         self.mock_competitor3.as_dict(),
-                         self.mock_competitor2.as_dict(),
-                         self.mock_competitor4.as_dict()]
+        expected_list = [self.mock_competitor1.get_all_placings(),
+                         self.mock_competitor3.get_all_placings(),
+                         self.mock_competitor2.get_all_placings(),
+                         self.mock_competitor4.get_all_placings()]
         assert self.mock_ranking.get() == expected_list
 
     def test_removes_low_attendance_players_from_competitor_list(self):
         self.mock_ranking.set_assistance_requirement(tournament_number=2)
-        expected_list = [self.mock_competitor1.as_dict(),
-                         self.mock_competitor3.as_dict(),
-                         self.mock_competitor2.as_dict(),
-                         self.mock_competitor4.as_dict()]
+        expected_list = [self.mock_competitor1.get_all_placings(),
+                         self.mock_competitor3.get_all_placings(),
+                         self.mock_competitor2.get_all_placings(),
+                         self.mock_competitor4.get_all_placings()]
         assert self.mock_ranking.get() == expected_list
 
     def test_registers_set_for_players(self):
         self.mock_ranking.total_sets.register_set(self.mock_set1)
         self.mock_ranking.total_sets.register_set(self.mock_set2)
         self.mock_ranking.total_sets.register_set(self.mock_set3)
-        self.mock_ranking.assign_set_history_for_top_15_players()
+        self.mock_ranking.assign_set_history_for_top_players(15)
         expected_list = [self.mock_set2.as_dict(), self.mock_set1.as_dict()]
         assert self.mock_ranking.competitors[0].sets('all') == expected_list

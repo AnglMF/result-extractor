@@ -4,6 +4,32 @@ POSSIBLE_PLACINGS = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (7, 6), (9, 7), (13
                      (49, 12), (65, 13), (97, 14), (129, 15)]
 
 
+def calculate_difference(seed, placement):
+    expected = 0
+    previous = 0
+    actual = 0
+    try:
+        for placing in POSSIBLE_PLACINGS:
+            if seed >= placing[0]:
+                previous = placing
+            else:
+                expected = previous[1]
+                break
+        for placing in POSSIBLE_PLACINGS:
+            if placement >= placing[0]:
+                previous = placing
+            else:
+                actual = previous[1]
+                break
+    except TypeError:
+        return '-'
+
+    value = expected - actual
+    if value > 0:
+        value = '+' + str(value)
+    return value
+
+
 class Competitor:
     def __init__(self, id, gamertag, tournaments):
         self.placings = {}  # {tournament: {placing: n, seed: n}}
@@ -41,16 +67,16 @@ class Competitor:
         if set_object.winner == self.gamertag:
             self.__sets_won += 1
 
-    def sets(self, type, **kwargs):
+    def sets(self, category, **kwargs):
         try:
-            if type == 'won':
+            if category == 'won':
                 set_history = self.__sets.get_sets_won()
-            elif type == 'lost':
+            elif category == 'lost':
                 set_history = self.__sets.get_sets_lost()
-            elif type == 'vs':
+            elif category == 'vs':
                 opponent = kwargs.get('opponent')
                 set_history = self.__sets.get_sets_vs(opponent)
-            elif type == 'all':
+            elif category == 'all':
                 set_history = self.__sets.get_sets()
             else:
                 raise ValueError
@@ -60,12 +86,12 @@ class Competitor:
         except ValueError:
             print('Invalid Option')
 
-    def get_single_tournament_result(self, tournament):
+    def get_tournament_result(self, tournament):
         competitor_dict = self.__get_main_data()
-        competitor_dict[tournament + ' placing'] = self.placings[tournament]["placing"]
-        competitor_dict[tournament + ' seed'] = self.placings[tournament]["seed"]
-        competitor_dict[tournament + ' difference'] = self.calculate_difference(self.placings[tournament]["seed"],
-                                                                                self.placings[tournament]["placing"])
+        competitor_dict['placing'] = self.placings[tournament]["placing"]
+        competitor_dict['seed'] = self.placings[tournament]["seed"]
+        competitor_dict['difference'] = calculate_difference(self.placings[tournament]["seed"],
+                                                             self.placings[tournament]["placing"])
         return competitor_dict
 
     def __get_main_data(self):
@@ -76,7 +102,7 @@ class Competitor:
         competitor_dict['avg_placing'] = self.average
         return competitor_dict
 
-    def as_dict(self):
+    def get_all_placings(self):
         competitor_dict = self.__get_main_data()
         for tournament in self.placings.keys():
             competitor_dict[tournament] = self.placings[tournament]["placing"]
@@ -87,31 +113,6 @@ class Competitor:
 
     def record_vs(self, opponent):
         return self.__sets.get_set_record_vs(opponent)
-
-    def calculate_difference(self, seed, placement):
-        expected = 0
-        previous = 0
-        actual = 0
-        value = 0
-        try:
-            for placing in POSSIBLE_PLACINGS:
-                if seed >= placing[0]:
-                    previous = placing
-                else:
-                    expected = previous[1]
-                    break
-            for placing in POSSIBLE_PLACINGS:
-                if placement >= placing[0]:
-                    previous = placing
-                else:
-                    actual = previous[1]
-                    break
-        except TypeError:
-            return '-'
-        value = expected-actual
-        if value > 0:
-            value = '+' + str(value)
-        return value
 
     def __str__(self):
         return self.gamertag + self.id

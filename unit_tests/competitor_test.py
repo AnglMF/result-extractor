@@ -1,4 +1,5 @@
 from competitor.competitor import Competitor
+from competitor.competitor import calculate_difference
 from sets.set import Set
 import unittest
 
@@ -17,13 +18,13 @@ class CompetitorTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "GoodPlayer",
-                        "playerId": 1
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "GoodPlayer",
+                            "playerId": 1
+                        }
+                    ]
+                }
             },
             {
                 "standing": {
@@ -34,13 +35,13 @@ class CompetitorTest(unittest.TestCase):
                         }
                     }
                 }, "entrant": {
-                "participants": [
-                    {
-                        "gamerTag": "GreatPlayer",
-                        "playerId": 3
-                    }
-                ]
-            }
+                    "participants": [
+                        {
+                            "gamerTag": "GreatPlayer",
+                            "playerId": 3
+                        }
+                    ]
+                }
             }
         ]
     }
@@ -74,11 +75,10 @@ class CompetitorTest(unittest.TestCase):
         assert self.mock_competitor.sets('vs', opponent='GreatPlayer') == [self.mock_set1.as_dict()]
 
     def test_calculate_difference_results(self):
-        assert self.mock_competitor.calculate_difference(9, 7) == '+1'
+        assert calculate_difference(9, 7) == '+1'
 
     def test_fails_when_invalid_option_on_set_request(self):
         try:
             self.mock_competitor.sets('invalid_option')
         except ValueError:
             assert True
-
