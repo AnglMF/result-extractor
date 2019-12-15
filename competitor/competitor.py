@@ -4,7 +4,7 @@ POSSIBLE_PLACINGS = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (7, 6), (9, 7), (13
                      (49, 12), (65, 13), (97, 14), (129, 15)]
 
 
-def calculate_difference(seed, placement):
+def calculate_performance(seed, placement):
     expected = 0
     previous = 0
     actual = 0
@@ -90,7 +90,7 @@ class Competitor:
         competitor_dict = self.__get_main_data()
         competitor_dict['placing'] = self.placings[tournament]["placing"]
         competitor_dict['seed'] = self.placings[tournament]["seed"]
-        competitor_dict['difference'] = calculate_difference(self.placings[tournament]["seed"],
+        competitor_dict['performance'] = calculate_performance(self.placings[tournament]["seed"],
                                                              self.placings[tournament]["placing"])
         return competitor_dict
 

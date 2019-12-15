@@ -117,7 +117,7 @@ class ResultsWorkBook:
     def register_tournament_results(self, tournament, participants):
         df = pandas.DataFrame.from_dict(participants)
         self.worksheet = self.new_worksheet(tournament)
-        orden = ["name", "placing", "seed", "difference"]
+        orden = ["name", "placing", "seed", "performance"]
         df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
