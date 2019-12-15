@@ -54,9 +54,9 @@ class Ranking:
         competitor_list = []
         for competitor in self.competitors:
             competitor_dict = competitor.get_tournament_result(tournament)
-            if not competitor_dict[tournament + " placing"] == '-':
+            if not competitor_dict["placing"] == '-':
                 competitor_list.append(competitor_dict)
-        sorted_list = sorted(competitor_list, key=lambda competitors: competitors[tournament + " placing"])
+        sorted_list = sorted(competitor_list, key=lambda competitors: competitors["placing"])
         return sorted_list
 
     def assign_set_history_for_top_players(self, player_number):
@@ -117,7 +117,7 @@ class ResultsWorkBook:
     def register_tournament_results(self, tournament, participants):
         df = pandas.DataFrame.from_dict(participants)
         self.worksheet = self.new_worksheet(tournament)
-        orden = ["name", tournament + " placing", tournament + " seed", tournament + " difference"]
+        orden = ["name", "placing", "seed", "difference"]
         df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
