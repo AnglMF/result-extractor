@@ -1,0 +1,6 @@
+- Improve logging
+- Additional tests for competitor, where there's issues on registering placings/performance for tournaments
+- Additional tests for queries.py, tournament doesn't exist
+- Additional tests for queries.py where an event doesn't have sets?
+- Add functionality to avoid rate limits
+- Additional tests for competitor.py where get_tournament_result doesn't have a tournament value on placigs list

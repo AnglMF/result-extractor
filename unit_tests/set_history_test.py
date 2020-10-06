@@ -17,7 +17,11 @@ class SetHistoryTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "GoodPlayer",
-                        "playerId": 1
+                        "player": [
+                                {
+                                    "id": 1
+                                }
+                        ]
                     }
                 ]
             }
@@ -34,7 +38,11 @@ class SetHistoryTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "GreatPlayer",
-                        "playerId": 3
+                        "player": [
+                                {
+                                    "id": 3
+                                }
+                        ]
                     }
                 ]
             }
@@ -54,7 +62,11 @@ class SetHistoryTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "GoodPlayer",
-                        "playerId": 1
+                        "player": [
+                                {
+                                    "id": 1
+                                }
+                        ]
                     }
                 ]
             }
@@ -71,7 +83,11 @@ class SetHistoryTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "BadPlayer",
-                        "playerId": 2
+                        "player": [
+                                {
+                                    "id": 2
+                                }
+                        ]
                     }
                 ]
             }
@@ -91,7 +107,11 @@ class SetHistoryTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "GoodPlayer",
-                        "playerId": 1
+                        "player": [
+                                {
+                                    "id": 1
+                                }
+                        ]
                     }
                 ]
             }
@@ -108,7 +128,11 @@ class SetHistoryTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "BadPlayer",
-                        "playerId": 2
+                        "player": [
+                                {
+                                    "id": 2
+                                }
+                        ]
                     }
                 ]
             }

@@ -61,7 +61,7 @@ from the tournaments listed in the tournamentList.yml file.
 
 - ##### ```assign_set_history_to_top_15_players```
 
-  Populates the ```__sets``` property of the top 15 competitors with the highest ```average``` property value.
+  Populates the ```sets``` property of the top 15 competitors with the highest ```average``` property value.
 
 
 

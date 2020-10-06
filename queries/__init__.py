@@ -23,7 +23,9 @@ def event_sets_query():
                     }
                     entrant{
                       participants{
-                        playerId
+                        player{
+                            id
+                        }
                         gamerTag
                       }
                     }
@@ -49,7 +51,9 @@ def event_standings_query():
                     nodes{
                       entrant{
                         participants{
-                          playerId
+                          player{
+                            id
+                          }
                           gamerTag
                         }
                         seeds{
@@ -76,7 +80,9 @@ def event_participants_query():
                   id
                   participants{
                     gamerTag
-                    playerId
+                    player{
+                        id
+                    }
                   }
                 }
               }

@@ -7,9 +7,10 @@ class SetHistory:
         self.player = player
         self.__unsorted = False
         self.total_set_count = 0
+        self.win_percentage = 0
 
-    def get_win_percentage(self):
-        return len(self.get_sets_won())/self.total_set_count
+    def update_win_percentage(self):
+        self.win_percentage = len(self.get_sets_won())/self.total_set_count * 100
 
     def get_sets_won(self):
         self.__sort_sets()
@@ -27,6 +28,7 @@ class SetHistory:
                 self.__unsorted = True
                 self.sets.append(set_object)
                 self.total_set_count += 1
+                self.update_win_percentage()
             else:
                 raise ValueError
         except ValueError:

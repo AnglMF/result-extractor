@@ -8,6 +8,7 @@ from sets.set_history import SetHistory
 from queries.queries import Query
 
 import pandas
+import os
 
 
 def log(_message, _object):
@@ -43,12 +44,12 @@ class Ranking:
                     self.__unqualified_competitors.append(competitor)
         self.competitors = self.__qualified_competitors
 
-    def get(self):
+    def sort_competitors(self):
         self.sort_by_avg_placing()
-        competitor_list = []
+        sorted_competitor_list = []
         for competitor in self.competitors:
-            competitor_list.append(competitor.get_all_placings())
-        return competitor_list
+            sorted_competitor_list.append(competitor.get_all_placings())
+        self.competitors = sorted_competitor_list
 
     def get_single_tournament_results(self, tournament):
         competitor_list = []
@@ -96,7 +97,7 @@ class ResultsWorkBook:
         self.worksheet = self.new_worksheet("Placings")
         df = pandas.DataFrame.from_dict(info)
         df = df.sort_values("avg_placing")
-        orden = ["id", "avg_placing", "name"] + tournamentList['tournaments']
+        orden = ["id", "avg_placing", "win_perc", "name"] + tournamentList['tournaments']
         df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)
@@ -140,19 +141,19 @@ class ResultsWorkBook:
 
 
 class TournamentSetsRequest:
-    auth_token = 'YOUR TOKEN HERE'
     events = {}  # tournament: event_id
     ranking = Ranking()
     participants_dict = {}  # participant, competitor_object
     sets = ranking.total_sets
-    client = Query(auth_token)
+    client = Query(os.environ['TOKEN'])
+    print(os.environ['TOKEN'])
 
     def __get_events_sets(self, events):
         for tournament, event in events:
+            log("Getting information for " + tournament, None)
             self._get_event_participants(tournament, event)
-            log("Participant list", self.ranking.competitors)
             self._get_event_sets(tournament, event)
-            log("Participants with placings", self.ranking.competitors)
+            log(tournament + " done", None)
 
     def __get_tournament_events(self, tournaments, event):
         self.events = self.client.query_tournament_events(tournaments, event)
@@ -165,7 +166,6 @@ class TournamentSetsRequest:
         event_sets = self.client.query_event_sets(tournament, event)
         for set in event_sets:
             self.sets.register_set(set)
-        log('Event sets: ', event_sets)
 
     def _get_event_participants(self, tournament, event):
         event_participants, total_participants = self.client.query_event_standings(event)
@@ -186,6 +186,7 @@ if __name__ == "__main__":
     tournamentList = load(open("tournamentList.yml", "r"))
     prueba = TournamentSetsRequest()
     prueba.get_all_sets(tournamentList["tournaments"], tournamentList["event"])
+    prueba.ranking.sort_by_avg_placing()
     file = ResultsWorkBook()
     file.register_sets(prueba.sets.get_sets())
     file.register_h2h(prueba.ranking.get_h2h_record())

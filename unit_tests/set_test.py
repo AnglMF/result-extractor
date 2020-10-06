@@ -16,7 +16,11 @@ class SetTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "GoodPlayer",
-                        "playerId": 1
+                        "player": [
+                                {
+                                    "id": 1
+                                }
+                        ]
                     }
                 ]
             }
@@ -33,7 +37,11 @@ class SetTest(unittest.TestCase):
                 "participants": [
                     {
                         "gamerTag": "BadPlayer",
-                        "playerId": 2
+                        "player": [
+                                {
+                                    "id": 2
+                                }
+                        ]
                     }
                 ]
             }
@@ -67,7 +75,11 @@ class SetTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "GoodPlayer",
-                            "playerId": 1
+                            "player": [
+                                {
+                                    "id": 1
+                                }
+                            ]
                         }
                     ]
                 }
@@ -84,7 +96,11 @@ class SetTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "BadPlayer",
-                            "playerId": 2
+                            "player": [
+                                {
+                                    "id": 2
+                                }
+                            ]
                         }
                     ]
                 }

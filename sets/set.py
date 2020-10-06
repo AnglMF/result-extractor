@@ -3,8 +3,8 @@ class Set:
         try:
             self.player1 = set_dict["slots"][0]["entrant"]["participants"][0]["gamerTag"]
             self.player2 = set_dict["slots"][1]["entrant"]["participants"][0]["gamerTag"]
-            self.player1_id = set_dict["slots"][0]["entrant"]["participants"][0]["playerId"]
-            self.player2_id = set_dict["slots"][1]["entrant"]["participants"][0]["playerId"]
+            self.player1_id = set_dict["slots"][0]["entrant"]["participants"][0]["player"]["id"]
+            self.player2_id = set_dict["slots"][1]["entrant"]["participants"][0]["player"]["id"]
             self.score1 = set_dict["slots"][0]["standing"]["stats"]["score"]["value"]
             self.score2 = set_dict["slots"][1]["standing"]["stats"]["score"]["value"]
             self.set_id = set_dict["id"]

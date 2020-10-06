@@ -38,12 +38,11 @@ class Competitor:
         self.average = 0
         self.tournaments_assisted = 0
         self.assistance_percentage = 0
-        self.__sets_won = 0
-        self.win_percentage = 0
+        self.sets_won = 0
         for tournament in tournaments:
             self.placings[tournament] = {'placing': '-'}
             self.placings[tournament]["seed"] = '-'
-        self.__sets = SetHistory(self.gamertag)
+        self.sets = SetHistory(self.gamertag)
 
     def __calculate_attendance(self):
         self.assistance_percentage = self.tournaments_assisted/len(self.placings.keys()) * 100
@@ -63,21 +62,19 @@ class Competitor:
         self.average = total_value/self.tournaments_assisted
 
     def register_set(self, set_object):
-        self.__sets.register_set(set_object)
-        if set_object.winner == self.gamertag:
-            self.__sets_won += 1
+        self.sets.register_set(set_object)
 
     def sets(self, category, **kwargs):
         try:
             if category == 'won':
-                set_history = self.__sets.get_sets_won()
+                set_history = self.sets.get_sets_won()
             elif category == 'lost':
-                set_history = self.__sets.get_sets_lost()
+                set_history = self.sets.get_sets_lost()
             elif category == 'vs':
                 opponent = kwargs.get('opponent')
-                set_history = self.__sets.get_sets_vs(opponent)
+                set_history = self.sets.get_sets_vs(opponent)
             elif category == 'all':
-                set_history = self.__sets.get_sets()
+                set_history = self.sets.get_sets()
             else:
                 raise ValueError
             if not set_history:
@@ -88,10 +85,16 @@ class Competitor:
 
     def get_tournament_result(self, tournament):
         competitor_dict = self.__get_main_data()
-        competitor_dict['placing'] = self.placings[tournament]["placing"]
-        competitor_dict['seed'] = self.placings[tournament]["seed"]
-        competitor_dict['performance'] = calculate_performance(self.placings[tournament]["seed"],
-                                                             self.placings[tournament]["placing"])
+        try:
+            competitor_dict['placing'] = self.placings[tournament]["placing"]
+            competitor_dict['seed'] = self.placings[tournament]["seed"]
+            competitor_dict['performance'] = calculate_performance(self.placings[tournament]["seed"],
+                                                                   self.placings[tournament]["placing"])
+        except KeyError:
+            print("error /: with performance/results data for " + competitor_dict["name"])
+            competitor_dict['placing'] = '-'
+            competitor_dict['seed'] = '-'
+            competitor_dict['performance'] = '-'
         return competitor_dict
 
     def __get_main_data(self):
@@ -104,15 +107,13 @@ class Competitor:
 
     def get_all_placings(self):
         competitor_dict = self.__get_main_data()
+        competitor_dict['win_perc'] = self.sets.win_percentage
         for tournament in self.placings.keys():
             competitor_dict[tournament] = self.placings[tournament]["placing"]
         return competitor_dict
 
-    def win_percentage(self):
-        return self.__sets.get_win_percentage()
-
     def record_vs(self, opponent):
-        return self.__sets.get_set_record_vs(opponent)
+        return self.sets.get_set_record_vs(opponent)
 
     def __str__(self):
         return self.gamertag + self.id

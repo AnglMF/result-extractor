@@ -1,5 +1,7 @@
 from graphqlclient import GraphQLClient
 from sets.set import Set
+from datetime import datetime, timedelta
+from time import sleep
 
 import queries
 import json
@@ -16,25 +18,33 @@ class Query:
     def __init__(self, token):
         self.client = GraphQLClient('https://api.smash.gg/gql/alpha')
         self.client.inject_token('Bearer ' + token)
+        self.last_request = datetime.now()
+        self.next_request = datetime.now()
 
     def _post(self, body, variables):
+        if (self.next_request-datetime.now()).total_seconds() > 0:
+            sleep((self.next_request-datetime.now()).total_seconds())
+        self.next_request = datetime.now() + timedelta(seconds=1, milliseconds=333)
         response = json.loads(self.client.execute(body, variables))
         if "errors" in response.keys():
             raise ValueError("There's an error with the query")
         return response
 
-    def query_tournament_events(self, tournaments_list, event):
+    def query_tournament_events(self, tournaments_list, events):
         request_body = queries.tournament_events_query()
         events_dict = {}
         for tournament in tournaments_list:
             response = self._post(request_body, {'tournamentName': tournament})
-            for key, value in enumerate(response['data']['tournament']['events']):
-                if event == value['name']:
-                    events_dict[tournament] = value['id']
+            try:
+                for key, value in enumerate(response['data']['tournament']['events']):
+                    if events[0] == value['name'] or events[1] == value['name']:
+                        events_dict[tournament] = value['id']
+            except TypeError:
+                print("Tournament doesn't exist: {t}".format(t=tournament))
         if events_dict:
             return events_dict
         else:
-            raise ValueError('Event {e} not found'.format(e=event))
+            raise ValueError('Event {e} not found'.format(e=events))
 
     def query_event_standings(self, event):
         request_body = queries.event_standings_query()
@@ -43,7 +53,7 @@ class Query:
         total_participants = response['data']['event']['standings']['pageInfo']['total']
         for key, value in enumerate(response['data']['event']['standings']['nodes']):
             participant = {}
-            participant['id'] = value["entrant"]["participants"][0]["playerId"]
+            participant['id'] = value["entrant"]["participants"][0]["player"]["id"]
             participant['name'] = value["entrant"]["participants"][0]["gamerTag"]
             participant['placement'] = value['placement']
             participant['seed'] = value["entrant"]["seeds"][0]["seedNum"]
@@ -60,28 +70,31 @@ class Query:
         event_sets = self._post(request_body, {"eventID": event_id,
                                                "page_number": page_number,
                                                "per_page": per_page})
-        total_sets = event_sets["data"]["event"]["sets"]["pageInfo"]["total"]
-        for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
-            try:
-                set_entry = Set(value, tournament)
-                if is_dq(set_entry):
-                    sets.append(set_entry)
-                    del set_entry
-            except AttributeError:
-                print('invalid set')
-        sets_registered += per_page
-        while not sets_registered > total_sets:
-            page_number += 1
-            event_sets = self._post(request_body, {"eventID": event_id,
-                                                   "page_number": page_number,
-                                                   "per_page": per_page})
+        try:
+            total_sets = event_sets["data"]["event"]["sets"]["pageInfo"]["total"]
             for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
-                set_entry = Set(value, tournament)
                 try:
+                    set_entry = Set(value, tournament)
                     if is_dq(set_entry):
                         sets.append(set_entry)
                         del set_entry
                 except AttributeError:
                     print('invalid set')
             sets_registered += per_page
+            while not sets_registered > total_sets:
+                page_number += 1
+                event_sets = self._post(request_body, {"eventID": event_id,
+                                                       "page_number": page_number,
+                                                       "per_page": per_page})
+                for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
+                    set_entry = Set(value, tournament)
+                    try:
+                        if is_dq(set_entry):
+                            sets.append(set_entry)
+                            del set_entry
+                    except AttributeError:
+                        print('invalid set')
+                sets_registered += per_page
+        except TypeError:
+            print("Error with {a}".format(a=tournament))
         return sets
