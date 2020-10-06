@@ -7,7 +7,8 @@ class SetTest(unittest.TestCase):
         "id": 1, "round": 1, "slots": [
             {
                 "standing": {
-                    "placement": 2, "stats": {
+                    "placement": 2,
+                    "stats": {
                         "score": {
                             "value": 0
                         }
@@ -47,13 +48,13 @@ class SetTest(unittest.TestCase):
     mock_set = Set(mock_set_data, 'tournament1')
 
     def test_returns_players_list(self):
-        assert self.mock_set.get_players() == ['GoodPlayer', 'BadPlayer']
+        assert self.mock_set.get_players() == ['BadPlayer', 'GoodPlayer']
 
     def test_assigns_correct_winner(self):
-        assert self.mock_set.winner == 'BadPlayer'
+        assert self.mock_set.player1 == 'BadPlayer'
 
     def test_returns_dictionary_with_set_information(self):
-        expected_dict_value = {"score1": 0, "p1": "GoodPlayer", "score2": 2, "p2": "BadPlayer", "winner": "BadPlayer",
+        expected_dict_value = {"score1": 2, "winner": "BadPlayer", "score2": 0, "loser": "GoodPlayer",
                                "round": 1, "tournament": "tournament1"}
         self.assertEqual(expected_dict_value, self.mock_set.as_dict())
 

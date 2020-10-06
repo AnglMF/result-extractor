@@ -167,11 +167,11 @@ class SetHistoryTest(unittest.TestCase):
 
     def test_returns_list_of_set_dictionares(self):
         expected_value = [
-            {"score1": 3, "p1": "GoodPlayer", "score2": 1, "p2": "BadPlayer", "winner": "GoodPlayer",
+            {"score1": 3, "winner": "GoodPlayer", "score2": 1, "loser": "BadPlayer",
             "round": 4, "tournament": "tournament2"},
-            {"score1": 3, "p1": "GoodPlayer", "score2": 0, "p2": "BadPlayer", "winner": "GoodPlayer",
+            {"score1": 3, "winner": "GoodPlayer", "score2": 0, "loser": "BadPlayer",
             "round": 2, "tournament": "tournament3"},
-            {"score1": 0, "p1": "GoodPlayer", "score2": 2, "p2": "GreatPlayer", "winner": "GreatPlayer",
+            {"score1": 2, "winner": "GreatPlayer", "score2": 0, "loser": "GoodPlayer",
             "round": 1, "tournament": "tournament1"}
         ]
         self.assertEqual(expected_value, self.set_history.get_sets())

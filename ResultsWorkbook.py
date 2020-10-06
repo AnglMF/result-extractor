@@ -48,7 +48,7 @@ class ResultsWorkBook:
     def register_sets(self, info):
         self.worksheet.title = "Sets Head 2 Head"
         df = pandas.DataFrame.from_dict(info)
-        orden = ["score1", "p1", "p2", "score2", "tournament", "round", "winner"]
+        orden = ["score1", "winner", "loser", "score2", "tournament", "round"]
         df = df.reindex(columns=orden)
         for r in dataframe_to_rows(df, index=True, header=True):
             self.worksheet.append(r)

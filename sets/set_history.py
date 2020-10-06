@@ -14,12 +14,12 @@ class SetHistory:
 
     def get_sets_won(self):
         self.__sort_sets()
-        sets_won = [_set for _set in self.sets if self.player == _set.winner]
+        sets_won = [_set for _set in self.sets if self.player == _set.player1]
         return self.get_sets_dict_list(sets_won)
 
     def get_sets_lost(self):
         self.__sort_sets()
-        sets_lost = [_set for _set in self.sets if not self.player == _set.winner]
+        sets_lost = [_set for _set in self.sets if not self.player == _set.player1]
         return self.get_sets_dict_list(sets_lost)
 
     def register_set(self, set_object):
