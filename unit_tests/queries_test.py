@@ -3,10 +3,11 @@ from urllib.error import HTTPError
 from queries.queries import Query
 
 import unittest
+import os
 
 
 class QueryTest(unittest.TestCase):
-    client = Query('YOUR TOKEN HERE')
+    client = Query(os.environ['TOKEN'])
 
     # test for invalid token
     def test_fails_when_invalid_token_injected(self):
@@ -26,7 +27,7 @@ class QueryTest(unittest.TestCase):
 
     def test_returns_dict_of_events_found(self):
         tournament_list = ['xtr-ultimate-tournament']
-        event = 'Smash Ultimate Singles'
+        event = ['Smash Ultimate Singles']
         expected_dict = {'xtr-ultimate-tournament': 294000}
         actual_list = self.client.query_tournament_events(tournament_list, event)
         self.assertEqual(expected_dict, actual_list)

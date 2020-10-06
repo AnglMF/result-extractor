@@ -10,7 +10,7 @@ class SetHistory:
         self.win_percentage = 0
 
     def update_win_percentage(self):
-        self.win_percentage = len(self.get_sets_won())/self.total_set_count * 100
+        self.win_percentage = len(self.get_sets_won())*100/self.total_set_count
 
     def get_sets_won(self):
         self.__sort_sets()

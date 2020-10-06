@@ -37,8 +37,9 @@ class Query:
             response = self._post(request_body, {'tournamentName': tournament})
             try:
                 for key, value in enumerate(response['data']['tournament']['events']):
-                    if events[0] == value['name'] or events[1] == value['name']:
-                        events_dict[tournament] = value['id']
+                    for event in events:
+                        if event == value['name']:
+                            events_dict[tournament] = value['id']
             except TypeError:
                 print("Tournament doesn't exist: {t}".format(t=tournament))
         if events_dict:

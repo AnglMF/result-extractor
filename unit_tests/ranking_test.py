@@ -49,11 +49,9 @@ class RankingTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "player1",
-                            "player": [
-                                {
-                                    "id": 1
-                                }
-                            ]
+                            "player": {
+                                "id": 1
+                            }
                         }
                     ]
                 }
@@ -70,11 +68,9 @@ class RankingTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "player2",
-                            "player": [
-                                {
-                                    "id": 3
-                                }
-                            ]
+                            "player": {
+                                "id": 3
+                            }
                         }
                     ]
                 }
@@ -94,11 +90,9 @@ class RankingTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "player1",
-                            "player": [
-                                {
-                                    "id": 1
-                                }
-                            ]
+                            "player": {
+                                "id": 1
+                            }
                         }
                     ]
                 }
@@ -115,11 +109,9 @@ class RankingTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "player3",
-                            "player": [
-                                {
-                                    "id": 3
-                                }
-                            ]
+                            "player": {
+                                "id": 3
+                            }
                         }
                     ]
                 }
@@ -139,11 +131,9 @@ class RankingTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "player3",
-                            "player": [
-                                {
-                                    "id": 1
-                                }
-                            ]
+                            "player": {
+                                "id": 1
+                            }
                         }
                     ]
                 }
@@ -160,11 +150,9 @@ class RankingTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "player4",
-                            "player": [
-                                {
-                                    "id": 2
-                                }
-                            ]
+                            "player": {
+                                "id": 2
+                            }
                         }
                     ]
                 }
@@ -176,19 +164,21 @@ class RankingTest(unittest.TestCase):
     mock_set3 = Set(mock_set3_data, 't2')
 
     def test_returns_sorted_list_by_average_placing(self):
-        expected_list = [self.mock_competitor1.get_all_placings(),
-                         self.mock_competitor3.get_all_placings(),
-                         self.mock_competitor2.get_all_placings(),
-                         self.mock_competitor4.get_all_placings()]
-        assert self.mock_ranking.get() == expected_list
+        expected_list = [self.mock_competitor1,
+                         self.mock_competitor3,
+                         self.mock_competitor2,
+                         self.mock_competitor4]
+        print(self.mock_ranking.competitors)
+        print(self.mock_competitor1)
+        assert self.mock_ranking.competitors == expected_list
 
     def test_removes_low_attendance_players_from_competitor_list(self):
         self.mock_ranking.set_assistance_requirement(tournament_number=2)
-        expected_list = [self.mock_competitor1.get_all_placings(),
-                         self.mock_competitor3.get_all_placings(),
-                         self.mock_competitor2.get_all_placings(),
-                         self.mock_competitor4.get_all_placings()]
-        assert self.mock_ranking.get() == expected_list
+        expected_list = [self.mock_competitor1,
+                         self.mock_competitor3,
+                         self.mock_competitor2,
+                         self.mock_competitor4]
+        assert self.mock_ranking.competitors == expected_list
 
     def test_registers_set_for_players(self):
         self.mock_ranking.total_sets.register_set(self.mock_set1)
@@ -196,4 +186,4 @@ class RankingTest(unittest.TestCase):
         self.mock_ranking.total_sets.register_set(self.mock_set3)
         self.mock_ranking.assign_set_history_for_top_players(15)
         expected_list = [self.mock_set2.as_dict(), self.mock_set1.as_dict()]
-        assert self.mock_ranking.competitors[0].sets('all') == expected_list
+        assert self.mock_ranking.competitors[0].sets.get_sets == expected_list

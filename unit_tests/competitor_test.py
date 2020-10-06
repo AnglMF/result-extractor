@@ -1,5 +1,5 @@
 from competitor.competitor import Competitor
-from competitor.competitor import calculate_difference
+from competitor.competitor import calculate_performance
 from sets.set import Set
 import unittest
 
@@ -21,11 +21,9 @@ class CompetitorTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "GoodPlayer",
-                            "player": [
-                                {
-                                    "id": 1
-                                }
-                            ]
+                            "player": {
+                                "id": 1
+                            }
                         }
                     ]
                 }
@@ -42,11 +40,9 @@ class CompetitorTest(unittest.TestCase):
                     "participants": [
                         {
                             "gamerTag": "GreatPlayer",
-                            "player": [
-                                {
-                                    "d": 3
-                                }
-                            ]
+                            "player": {
+                                "id": 3
+                            }
                         }
                     ]
                 }
@@ -77,16 +73,10 @@ class CompetitorTest(unittest.TestCase):
         assert True
 
     def test_return_empty_list_for_not_found_sets(self):
-        assert self.mock_competitor.sets('won') == []
+        assert self.mock_competitor.sets.get_sets_won() == []
 
     def test_return_list_with_sets_found(self):
-        assert self.mock_competitor.sets('vs', opponent='GreatPlayer') == [self.mock_set1.as_dict()]
+        assert self.mock_competitor.sets.get_sets_vs(opponent='GreatPlayer') == [self.mock_set1.as_dict()]
 
-    def test_calculate_difference_results(self):
-        assert calculate_difference(9, 7) == '+1'
-
-    def test_fails_when_invalid_option_on_set_request(self):
-        try:
-            self.mock_competitor.sets('invalid_option')
-        except ValueError:
-            assert True
+    def test_calculate_performance_results(self):
+        assert calculate_performance(9, 7) == '+1'

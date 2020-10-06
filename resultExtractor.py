@@ -146,7 +146,6 @@ class TournamentSetsRequest:
     participants_dict = {}  # participant, competitor_object
     sets = ranking.total_sets
     client = Query(os.environ['TOKEN'])
-    print(os.environ['TOKEN'])
 
     def __get_events_sets(self, events):
         for tournament, event in events:
