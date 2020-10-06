@@ -28,6 +28,9 @@ def event_sets_query():
                         }
                         gamerTag
                       }
+                        seeds{
+                            seedNum
+                        }
                     }
                   }
                 }

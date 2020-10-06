@@ -49,7 +49,7 @@ class SetHistory:
             won = 0
             lost = 0
             for _set in sets:
-                if _set.winner == opponent:
+                if _set.player1 == opponent:
                     lost += 1
                 else:
                     won += 1

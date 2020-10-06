@@ -53,7 +53,8 @@ class RankingTest(unittest.TestCase):
                                 "id": 1
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             },
             {
@@ -72,7 +73,8 @@ class RankingTest(unittest.TestCase):
                                 "id": 3
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             }
         ]
@@ -94,7 +96,8 @@ class RankingTest(unittest.TestCase):
                                 "id": 1
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             },
             {
@@ -113,7 +116,8 @@ class RankingTest(unittest.TestCase):
                                 "id": 3
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             }
         ]
@@ -135,7 +139,8 @@ class RankingTest(unittest.TestCase):
                                 "id": 1
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             },
             {
@@ -154,7 +159,8 @@ class RankingTest(unittest.TestCase):
                                 "id": 2
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             }
         ]

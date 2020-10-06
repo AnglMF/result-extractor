@@ -25,7 +25,8 @@ class CompetitorTest(unittest.TestCase):
                                 "id": 1
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             },
             {
@@ -44,7 +45,8 @@ class CompetitorTest(unittest.TestCase):
                                 "id": 3
                             }
                         }
-                    ]
+                    ],
+                    "seeds": [{"seedNum": 0}]
                 }
             }
         ]

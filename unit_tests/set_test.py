@@ -21,7 +21,10 @@ class SetTest(unittest.TestCase):
                             "id": 1
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             },
             {
@@ -40,7 +43,10 @@ class SetTest(unittest.TestCase):
                             "id": 2
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             }
         ]
@@ -55,7 +61,7 @@ class SetTest(unittest.TestCase):
 
     def test_returns_dictionary_with_set_information(self):
         expected_dict_value = {"score1": 2, "winner": "BadPlayer", "score2": 0, "loser": "GoodPlayer",
-                               "round": 1, "tournament": "tournament1"}
+                               "round": 1, "tournament": "tournament1", "result": "expected"}
         self.assertEqual(expected_dict_value, self.mock_set.as_dict())
 
     def test_returns_set_round_with_no_sign(self):
@@ -76,7 +82,10 @@ class SetTest(unittest.TestCase):
                                 "id": 1
                             }
                         }
-                    ]
+                    ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
                 }
                 },
                 {
@@ -88,14 +97,17 @@ class SetTest(unittest.TestCase):
                             }
                         }
                     }, "entrant": {
-                    "participants": [
-                        {
-                            "gamerTag": "BadPlayer",
-                            "player": {
-                                "id": 2
+                        "participants": [
+                            {
+                                "gamerTag": "BadPlayer",
+                                "player": {
+                                    "id": 2
+                                }
                             }
-                        }
-                    ]
+                        ],
+                        "seeds": [
+                            {"seedNum": 0}
+                        ]
                 }
                 }
             ]

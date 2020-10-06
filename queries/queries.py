@@ -64,7 +64,7 @@ class Query:
 
     def query_event_sets(self, tournament, event_id):
         page_number = 1
-        per_page = 49
+        per_page = 41
         sets_registered = 0
         request_body = queries.event_sets_query()
         sets = []

@@ -21,7 +21,10 @@ class SetHistoryTest(unittest.TestCase):
                             "id": 1
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             },
             {
@@ -40,7 +43,10 @@ class SetHistoryTest(unittest.TestCase):
                             "id": 3
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             }
         ]
@@ -62,7 +68,10 @@ class SetHistoryTest(unittest.TestCase):
                             "id": 1
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             },
             {
@@ -81,7 +90,10 @@ class SetHistoryTest(unittest.TestCase):
                                 "id": 2
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             }
         ]
@@ -103,7 +115,10 @@ class SetHistoryTest(unittest.TestCase):
                                 "id": 1
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             },
             {
@@ -122,7 +137,10 @@ class SetHistoryTest(unittest.TestCase):
                                 "id": 2
                         }
                     }
-                ]
+                ],
+                            "seeds": [
+                                {"seedNum": 0}
+                            ]
             }
             }
         ]
@@ -168,11 +186,11 @@ class SetHistoryTest(unittest.TestCase):
     def test_returns_list_of_set_dictionares(self):
         expected_value = [
             {"score1": 3, "winner": "GoodPlayer", "score2": 1, "loser": "BadPlayer",
-            "round": 4, "tournament": "tournament2"},
+            "round": 4, "tournament": "tournament2", "result": "expected"},
             {"score1": 3, "winner": "GoodPlayer", "score2": 0, "loser": "BadPlayer",
-            "round": 2, "tournament": "tournament3"},
+            "round": 2, "tournament": "tournament3", "result": "expected"},
             {"score1": 2, "winner": "GreatPlayer", "score2": 0, "loser": "GoodPlayer",
-            "round": 1, "tournament": "tournament1"}
+            "round": 1, "tournament": "tournament1", "result": "expected"}
         ]
         self.assertEqual(expected_value, self.set_history.get_sets())
 
