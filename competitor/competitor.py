@@ -107,6 +107,7 @@ class Competitor:
 
     def get_all_placings(self):
         competitor_dict = self.__get_main_data()
+        self.sets.update_win_percentage()
         competitor_dict['win_perc'] = self.sets.win_percentage
         for tournament in self.placings.keys():
             competitor_dict[tournament] = self.placings[tournament]["placing"]
@@ -116,4 +117,4 @@ class Competitor:
         return self.sets.get_set_record_vs(opponent)
 
     def __str__(self):
-        return self.gamertag + self.id
+        return self.gamertag + str(self.id)

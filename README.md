@@ -59,7 +59,7 @@ from the tournaments listed in the tournamentList.yml file.
   
   Assistance percentage ranges from 0 to 100.
 
-- ##### ```assign_set_history_to_top_15_players```
+- ##### ```assign_set_history```
 
   Populates the ```sets``` property of the top 15 competitors with the highest ```average``` property value.
 

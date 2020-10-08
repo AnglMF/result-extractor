@@ -28,7 +28,6 @@ class SetHistory:
                 self.__unsorted = True
                 self.sets.append(set_object)
                 self.total_set_count += 1
-                self.update_win_percentage()
             else:
                 raise ValueError
         except ValueError:

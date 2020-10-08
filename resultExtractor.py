@@ -4,6 +4,7 @@ from competitor.competitor import Competitor
 from sets.set_history import SetHistory
 from queries.queries import Query
 from ResultsWorkbook import ResultsWorkBook
+from datetime import datetime
 
 import os
 
@@ -41,13 +42,6 @@ class Ranking:
                     self.__unqualified_competitors.append(competitor)
         self.competitors = self.__qualified_competitors
 
-    def sort_competitors(self):
-        self.sort_by_avg_placing()
-        sorted_competitor_list = []
-        for competitor in self.competitors:
-            sorted_competitor_list.append(competitor.get_all_placings())
-        self.competitors = sorted_competitor_list
-
     def get_single_tournament_results(self, tournament):
         competitor_list = []
         for competitor in self.competitors:
@@ -57,19 +51,17 @@ class Ranking:
         sorted_list = sorted(competitor_list, key=lambda competitors: competitors["placing"])
         return sorted_list
 
-    def assign_set_history_for_top_players(self, player_number):
-        try:
-            for i in range(0, player_number):
-                sets_to_register = []
-                for _set in self.total_sets.sets:
-                    if self.competitors[i].gamertag in _set.get_players():
-                        sets_to_register.append(_set)
-                        self.competitors[i].register_set(_set)
-        except IndexError:
-            print('Not Enough qualified competitors')
+    def assign_set_history(self):
+        for _set in self.total_sets.sets:
+            set_assigned = 0
+            for player in self.competitors:
+                if player.gamertag in _set.get_players():
+                    player.register_set(_set)
+                    set_assigned += 1
+                    if set_assigned == 2:
+                        break
 
     def get_h2h_record(self):
-        self.assign_set_history_for_top_players(len(self.competitors))
         player_records = []
         for competitor1 in self.competitors:
             player_record_dictionary = {'player': competitor1.gamertag}
@@ -126,6 +118,7 @@ if __name__ == "__main__":
     prueba = TournamentSetsRequest()
     prueba.get_all_sets(tournamentList["tournaments"], tournamentList["event"])
     prueba.ranking.sort_by_avg_placing()
+    prueba.ranking.assign_set_history()
     participants_placings = []
     for participant in prueba.ranking.competitors:
         participants_placings.append(participant.get_all_placings())
