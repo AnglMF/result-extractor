@@ -10,7 +10,11 @@ class SetHistory:
         self.win_percentage = 0
 
     def update_win_percentage(self):
-        self.win_percentage = len(self.get_sets_won())*100/self.total_set_count
+        try:
+            self.win_percentage = len(self.get_sets_won())*100/self.total_set_count
+        except ZeroDivisionError:
+            print(self.player + " somehow has 0 set count")
+
 
     def get_sets_won(self):
         self.__sort_sets()

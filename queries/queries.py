@@ -68,34 +68,25 @@ class Query:
         sets_registered = 0
         request_body = queries.event_sets_query()
         sets = []
-        event_sets = self._post(request_body, {"eventID": event_id,
-                                               "page_number": page_number,
-                                               "per_page": per_page})
         try:
-            total_sets = event_sets["data"]["event"]["sets"]["pageInfo"]["total"]
-            for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
-                try:
-                    set_entry = Set(value, tournament)
-                    if is_dq(set_entry):
-                        sets.append(set_entry)
-                        del set_entry
-                except AttributeError:
-                    print('invalid set')
-            sets_registered += per_page
-            while not sets_registered > total_sets:
-                page_number += 1
+            while True:
                 event_sets = self._post(request_body, {"eventID": event_id,
                                                        "page_number": page_number,
                                                        "per_page": per_page})
+                total_sets = event_sets["data"]["event"]["sets"]["pageInfo"]["total"]
                 for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
-                    set_entry = Set(value, tournament)
                     try:
+                        set_entry = Set(value, tournament)
                         if is_dq(set_entry):
                             sets.append(set_entry)
                             del set_entry
                     except AttributeError:
                         print('invalid set')
                 sets_registered += per_page
+                page_number += 1
+                if sets_registered >= total_sets:
+                    print('Registered {a} sets of {b}'.format(a=sets_registered,b=total_sets))
+                    break
         except TypeError:
             print("Error with {a}".format(a=tournament))
         return sets
