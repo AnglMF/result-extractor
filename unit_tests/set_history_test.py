@@ -102,7 +102,8 @@ class SetHistoryTest(unittest.TestCase):
         "id": 3, "round": 2, "slots": [
             {
                 "standing": {
-                    "placement": 1, "stats": {
+                    "placement": 1, 
+                    "stats": {
                         "score": {
                             "value": 3
                         }
@@ -196,4 +197,16 @@ class SetHistoryTest(unittest.TestCase):
 
     def test_get_correct_win_percentage(self):
         assert self.set_history.win_percentage == 2*100/3
+
+    def test_update_participant_tag(self):
+        self.set_history.update_player_tag("GoodPlayer", "NewTag")
+        expected_value = [
+            {"score1": 3, "winner": "NewTag", "score2": 1, "loser": "BadPlayer",
+            "round": 4, "tournament": "tournament2", "result": "expected"},
+            {"score1": 3, "winner": "NewTag", "score2": 0, "loser": "BadPlayer",
+            "round": 2, "tournament": "tournament3", "result": "expected"},
+            {"score1": 2, "winner": "GreatPlayer", "score2": 0, "loser": "NewTag",
+            "round": 1, "tournament": "tournament1", "result": "expected"}
+        ]
+        assert expected_value==self.set_history.get_sets()
 

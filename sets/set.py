@@ -19,6 +19,16 @@ class Set:
 
     def get_players(self):
         return [self.player1, self.player2]
+    
+    def update_player(self, old_tag, new_tag):
+        if self.player1==old_tag:
+            self.player1=new_tag
+            print(f"Player {old_tag} updated to {new_tag}")
+        elif self.player2==old_tag:
+            print(f"Player {old_tag} updated to {new_tag}")
+            self.player2=new_tag
+        else:
+            print(f"The player {old_tag} was not found on this set")
 
     def check_winner(self, winner, seed1, seed2):
         if winner != 1:

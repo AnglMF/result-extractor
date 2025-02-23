@@ -15,7 +15,6 @@ class SetHistory:
         except ZeroDivisionError:
             print(self.player + " somehow has 0 set count")
 
-
     def get_sets_won(self):
         self.__sort_sets()
         sets_won = [_set for _set in self.sets if self.player == _set.player1]
@@ -78,3 +77,9 @@ class SetHistory:
         for _set in set_list:
             requested_sets_as_dict_list.append(_set.as_dict())
         return requested_sets_as_dict_list
+    
+    def update_player_tag(self, old_tag, new_tag):
+        sets = [_set for _set in self.sets if old_tag in _set.get_players()]
+        for _set in sets:
+            _set.update_player(old_tag,new_tag)
+        return
