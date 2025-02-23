@@ -2,12 +2,19 @@ from competitor.competitor import Competitor
 from competitor.competitor import calculate_performance
 from sets.set import Set
 import unittest
+unittest.TestLoader.sortTestMethodsUsing=None
 
 
 class CompetitorTest(unittest.TestCase):
     player_id = 00000
-    tournaments = ['tournament1', 'tournament2', 'tournament3', 'tournament4']
+    tournaments = ['tournament1', 'tournament2', 'tournament3', 
+                   'tournament4', 'tournament5']
     mock_competitor = Competitor(player_id, 'Tag', tournaments)
+    mock_competitor_copy = Competitor(player_id, 'Tag_copy', ['tournament1', 
+                                                              'tournament2', 
+                                                              'tournament3', 
+                                                              'tournament4', 
+                                                              'tournament5'])
     mock_set1_data = {
         "id": 1, "round": 1, "slots": [
             {
@@ -55,10 +62,12 @@ class CompetitorTest(unittest.TestCase):
 
     def test_return_attendance(self):
         placings = self.mock_competitor.placings
-        expected_placings = {'tournament1': {'placing': 3, 'seed': 3}, 'tournament2': {'placing': '-',
-                                                                                       'seed': '-'},
-                             'tournament3': {'placing': 1, 'seed': 1}, 'tournament4': {'placing': '-',
-                                                                                       'seed': '-'}}
+        expected_placings = {'tournament1': {'placing': 3, 'seed': 3}, 
+                             'tournament2': {'placing': '-','seed': '-'},
+                             'tournament3': {'placing': 1, 'seed': 1}, 
+                             'tournament4': {'placing': '-','seed': '-'},
+                             'tournament5': {'placing': '-','seed': '-'}
+        }
         assert expected_placings == placings
 
     def test_calculates_average_placing_correctly(self):
@@ -68,7 +77,9 @@ class CompetitorTest(unittest.TestCase):
 
     def test_return_tournament_attendance(self):
         attendance = self.mock_competitor.assistance_percentage
-        assert attendance == 50
+        print(attendance)
+        print(2/5*100)
+        assert attendance == (2/5*100)
 
     def test_register_competitor_set(self):
         self.mock_competitor.register_set(self.mock_set1)
@@ -82,3 +93,9 @@ class CompetitorTest(unittest.TestCase):
 
     def test_calculate_performance_results(self):
         assert calculate_performance(9, 7) == '+1'
+
+    def test_z_fuse_participant(self):
+        self.mock_competitor_copy.register_placing('tournament5', {'placing': 5, 'seed': 1})
+        self.mock_competitor.combine_data(self.mock_competitor_copy)
+        attendance = self.mock_competitor.average
+        assert attendance == 3

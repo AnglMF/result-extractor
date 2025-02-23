@@ -70,6 +70,16 @@ class Ranking:
                     player_record_dictionary[competitor2.gamertag] = competitor1.record_vs(competitor2.gamertag)
             player_records.append(player_record_dictionary)
         return player_records
+    
+    def merge_players(self, old_tag, new_tag):
+        self.total_sets.update_player_tag(old_tag, new_tag)
+        for correct_player in self.competitors:
+            if correct_player.gamertag == new_tag:
+                for old_player in self.competitors:
+                    if old_player.gamertag == old_tag:
+                        correct_player.combine_data(old_player)
+                        self.competitors.remove(old_player)
+        return
 
 
 class TournamentSetsRequest:
@@ -114,13 +124,14 @@ class TournamentSetsRequest:
 
 
 if __name__ == "__main__":
-    tournamentList = load(open("tournamentList.yml", "r"))
-    prueba = TournamentSetsRequest()
-    prueba.get_all_sets(tournamentList["tournaments"], tournamentList["event"])
-    prueba.ranking.sort_by_avg_placing()
-    prueba.ranking.assign_set_history()
+    tournamentList = load(open("tournamentList2.yml", "r"))
+    data = TournamentSetsRequest()
+    data.get_all_sets(tournamentList["tournaments"], tournamentList["event"])
+    data.ranking.merge_players("LFG | PanterA", "PanterA")
+    data.ranking.sort_by_avg_placing()
+    data.ranking.assign_set_history()
     participants_placings = []
-    for participant in prueba.ranking.competitors:
+    for participant in data.ranking.competitors:
         participants_placings.append(participant.get_all_placings())
     file = ResultsWorkBook()
-    file.create_spreadsheet(prueba, participants_placings, tournamentList["tournaments"])
+    file.create_spreadsheet(data, participants_placings, tournamentList["tournaments"])

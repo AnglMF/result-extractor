@@ -64,7 +64,7 @@ class Competitor:
     def register_set(self, set_object):
         self.sets.register_set(set_object)
 
-    def sets(self, category, **kwargs):
+    def get_sets(self, category, **kwargs):
         try:
             if category == 'won':
                 set_history = self.sets.get_sets_won()
@@ -91,7 +91,7 @@ class Competitor:
             competitor_dict['performance'] = calculate_performance(self.placings[tournament]["seed"],
                                                                    self.placings[tournament]["placing"])
         except KeyError:
-            print("error /: with performance/results data for " + competitor_dict["name"])
+            print("error with performance/results data for " + competitor_dict["name"])
             competitor_dict['placing'] = '-'
             competitor_dict['seed'] = '-'
             competitor_dict['performance'] = '-'
@@ -115,6 +115,20 @@ class Competitor:
 
     def record_vs(self, opponent):
         return self.sets.get_set_record_vs(opponent)
+    
+    def combine_data(self, competitor_clone):
+        # Add the placings of the "clone" to the competitor object
+        for tournament in competitor_clone.placings.keys():
+            if not competitor_clone.placings[tournament]["placing"]=="-":
+                self.register_placing(tournament, 
+                                      competitor_clone.placings[tournament])
+        
+        # Register all sets from the clone to the competitor object
+        competitor_clone.sets.update_player_tag(competitor_clone.gamertag,
+                                                self.gamertag)
+        for _set in competitor_clone.sets.sets:
+            self.register_set(_set)
+        return
 
     def __str__(self):
-        return self.gamertag + str(self.id)
+        return self.gamertag

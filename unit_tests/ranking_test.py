@@ -8,10 +8,10 @@ class RankingTest(unittest.TestCase):
     mock_tournaments = ['t1', 't2', 't3', 't4', 't5']
     mock_ranking = Ranking()
     mock_competitor1 = Competitor(1, 'player1', mock_tournaments)
-    mock_competitor2 = Competitor(1, 'player2', mock_tournaments)
-    mock_competitor3 = Competitor(1, 'player3', mock_tournaments)
-    mock_competitor4 = Competitor(1, 'player4', mock_tournaments)
-    mock_competitor5 = Competitor(1, 'player5', mock_tournaments)
+    mock_competitor2 = Competitor(2, 'player2', mock_tournaments)
+    mock_competitor3 = Competitor(3, 'player3', mock_tournaments)
+    mock_competitor4 = Competitor(4, 'player4', mock_tournaments)
+    mock_competitor5 = Competitor(5, 'player5', mock_tournaments)
     mock_competitor1.register_placing('t1', {'placing': 1, 'seed': 1})
     mock_competitor1.register_placing('t2', {'placing': 1, 'seed': 1})
     mock_competitor1.register_placing('t3', {'placing': 3, 'seed': 3})
@@ -192,3 +192,7 @@ class RankingTest(unittest.TestCase):
         self.mock_ranking.assign_set_history()
         expected_list = [self.mock_set2.as_dict(), self.mock_set1.as_dict()]
         assert self.mock_ranking.competitors[0].sets.get_sets() == expected_list
+
+    def test_z_merge_players(self):
+        self.mock_ranking.merge_players("player5", "player1")
+        assert self.mock_competitor5 not in self.mock_ranking.competitors
