@@ -7,11 +7,11 @@ import unittest
 class RankingTest(unittest.TestCase):
     mock_tournaments = ['t1', 't2', 't3', 't4', 't5']
     mock_ranking = Ranking()
-    mock_competitor1 = Competitor(1, 'player1', mock_tournaments)
-    mock_competitor2 = Competitor(2, 'player2', mock_tournaments)
-    mock_competitor3 = Competitor(3, 'player3', mock_tournaments)
-    mock_competitor4 = Competitor(4, 'player4', mock_tournaments)
-    mock_competitor5 = Competitor(5, 'player5', mock_tournaments)
+    mock_competitor1 = Competitor(1000, 'player1', mock_tournaments)
+    mock_competitor2 = Competitor(2000, 'player2', mock_tournaments)
+    mock_competitor3 = Competitor(3000, 'player3', mock_tournaments)
+    mock_competitor4 = Competitor(4000, 'player4', mock_tournaments)
+    mock_competitor5 = Competitor(5000, 'player5', mock_tournaments)
     mock_competitor1.register_placing('t1', {'placing': 1, 'seed': 1})
     mock_competitor1.register_placing('t2', {'placing': 1, 'seed': 1})
     mock_competitor1.register_placing('t3', {'placing': 3, 'seed': 3})
@@ -30,11 +30,11 @@ class RankingTest(unittest.TestCase):
     mock_competitor4.register_placing('t4', {'placing': 7, 'seed': 7})
     mock_competitor4.register_placing('t5', {'placing': 9, 'seed': 9})
     mock_competitor5.register_placing('t5', {'placing': 2, 'seed': 2})
-    mock_ranking.competitors.append(mock_competitor1)
-    mock_ranking.competitors.append(mock_competitor2)
-    mock_ranking.competitors.append(mock_competitor3)
-    mock_ranking.competitors.append(mock_competitor4)
-    mock_ranking.competitors.append(mock_competitor5)
+    mock_ranking.competitors[mock_competitor1.id] = mock_competitor1
+    mock_ranking.competitors[mock_competitor2.id] = mock_competitor2
+    mock_ranking.competitors[mock_competitor3.id] = mock_competitor3
+    mock_ranking.competitors[mock_competitor4.id] = mock_competitor4
+    mock_ranking.competitors[mock_competitor5.id] = mock_competitor5
 
     mock_set1_data = {
         "id": 1, "round": 1, "slots": [
@@ -50,7 +50,7 @@ class RankingTest(unittest.TestCase):
                         {
                             "gamerTag": "player1",
                             "player": {
-                                "id": 1
+                                "id": 1000
                             }
                         }
                     ],
@@ -70,7 +70,7 @@ class RankingTest(unittest.TestCase):
                         {
                             "gamerTag": "player2",
                             "player": {
-                                "id": 3
+                                "id": 2000
                             }
                         }
                     ],
@@ -93,7 +93,7 @@ class RankingTest(unittest.TestCase):
                         {
                             "gamerTag": "player1",
                             "player": {
-                                "id": 1
+                                "id": 1000
                             }
                         }
                     ],
@@ -113,7 +113,7 @@ class RankingTest(unittest.TestCase):
                         {
                             "gamerTag": "player3",
                             "player": {
-                                "id": 3
+                                "id": 3000
                             }
                         }
                     ],
@@ -136,7 +136,7 @@ class RankingTest(unittest.TestCase):
                         {
                             "gamerTag": "player3",
                             "player": {
-                                "id": 1
+                                "id": 3000
                             }
                         }
                     ],
@@ -156,7 +156,7 @@ class RankingTest(unittest.TestCase):
                         {
                             "gamerTag": "player4",
                             "player": {
-                                "id": 2
+                                "id": 4000
                             }
                         }
                     ],
@@ -175,24 +175,27 @@ class RankingTest(unittest.TestCase):
                          self.mock_competitor3,
                          self.mock_competitor2,
                          self.mock_competitor4]
-        self.assertEqual(self.mock_ranking.competitors, expected_list)
+        self.assertEqual(self.mock_ranking.competitors_sorted, expected_list)
 
     def test_removes_low_attendance_players_from_competitor_list(self):
         self.mock_ranking.set_assistance_requirement(tournament_number=2)
-        expected_list = [self.mock_competitor1,
-                         self.mock_competitor2,
-                         self.mock_competitor3,
-                         self.mock_competitor4]
-        assert self.mock_ranking.competitors == expected_list
+        expected_dict = {1000: self.mock_competitor1,
+                         2000: self.mock_competitor2,
+                         3000: self.mock_competitor3,
+                         4000: self.mock_competitor4}
+        assert self.mock_ranking.competitors == expected_dict
 
     def test_registers_set_for_players(self):
         self.mock_ranking.total_sets.register_set(self.mock_set1)
         self.mock_ranking.total_sets.register_set(self.mock_set2)
         self.mock_ranking.total_sets.register_set(self.mock_set3)
         self.mock_ranking.assign_set_history()
+        self.mock_ranking.competitors[1000].sets.get_sets()
         expected_list = [self.mock_set2.as_dict(), self.mock_set1.as_dict()]
-        assert self.mock_ranking.competitors[0].sets.get_sets() == expected_list
+        assert self.mock_ranking.competitors[1000].sets.get_sets() == expected_list
 
     def test_z_merge_players(self):
-        self.mock_ranking.merge_players("player5", "player1")
-        assert self.mock_competitor5 not in self.mock_ranking.competitors
+        self.mock_ranking.merge_players(["player2", "player5"], "player1")
+        assert (self.mock_competitor5.id not in self.mock_ranking.competitors.keys()) and (
+            self.mock_competitor2.id not in self.mock_ranking.competitors.keys()
+        )

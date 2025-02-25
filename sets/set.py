@@ -18,7 +18,7 @@ class Set:
             print("There's an error with the Set data entry")
 
     def get_players(self):
-        return [self.player1, self.player2]
+        return [{self.player1_id: self.player1}, {self.player2_id: self.player2}]
     
     def update_player(self, old_tag, new_tag):
         if self.player1==old_tag:
@@ -54,8 +54,10 @@ class Set:
         set_as_dict = {}
         set_as_dict["score1"] = self.score1
         set_as_dict["winner"] = self.player1
+        set_as_dict["winner_id"] = self.player1_id
         set_as_dict["score2"] = self.score2
         set_as_dict["loser"] = self.player2
+        set_as_dict["loser_id"] = self.player2_id
         set_as_dict['tournament'] = self.tournament
         set_as_dict["round"] = self.round
         set_as_dict["result"] = self.result

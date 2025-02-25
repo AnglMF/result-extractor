@@ -31,6 +31,7 @@ class SetHistory:
                 self.__unsorted = True
                 self.sets.append(set_object)
                 self.total_set_count += 1
+                self.update_win_percentage()
             else:
                 raise ValueError
         except ValueError:
@@ -38,20 +39,20 @@ class SetHistory:
 
     def get_sets_vs(self, opponent):
         self.__sort_sets()
-        sets_h2h = [_set for _set in self.sets if opponent in _set.get_players()]
+        sets_h2h = [_set for _set in self.sets if opponent.id in _set.as_dict().values()]
         if not sets_h2h:
-            raise ValueError('No sets vs specified player: {op}'.format(op=opponent))
+            raise ValueError('No sets vs specified player: {op}'.format(op=opponent.gamertag))
         else:
             return self.get_sets_dict_list(sets_h2h)
 
     def get_set_record_vs(self, opponent):
         ret = ""
         try:
-            sets = [_set for _set in self.sets if opponent in _set.get_players()]
+            sets = [_set for _set in self.sets if opponent.id in _set.as_dict().values()]
             won = 0
             lost = 0
             for _set in sets:
-                if _set.player1 == opponent:
+                if _set.player1_id == opponent.id:
                     lost += 1
                 else:
                     won += 1
@@ -79,7 +80,7 @@ class SetHistory:
         return requested_sets_as_dict_list
     
     def update_player_tag(self, old_tag, new_tag):
-        sets = [_set for _set in self.sets if old_tag in _set.get_players()]
+        sets = [_set for _set in self.sets if old_tag in _set.as_dict().values()]
         for _set in sets:
             _set.update_player(old_tag,new_tag)
         return

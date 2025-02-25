@@ -85,8 +85,8 @@ class Query:
                 sets_registered += per_page
                 page_number += 1
                 if sets_registered >= total_sets:
-                    print('Registered {a} sets of {b}'.format(a=sets_registered,b=total_sets))
+                    print(f'Registered {sets_registered} sets of {total_sets}')
                     break
         except TypeError:
-            print("Error with {a}".format(a=tournament))
+            print(f'Error with {tournament}')
         return sets

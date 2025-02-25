@@ -77,8 +77,6 @@ class CompetitorTest(unittest.TestCase):
 
     def test_return_tournament_attendance(self):
         attendance = self.mock_competitor.assistance_percentage
-        print(attendance)
-        print(2/5*100)
         assert attendance == (2/5*100)
 
     def test_register_competitor_set(self):
@@ -89,7 +87,7 @@ class CompetitorTest(unittest.TestCase):
         assert self.mock_competitor.sets.get_sets_won() == []
 
     def test_return_list_with_sets_found(self):
-        assert self.mock_competitor.sets.get_sets_vs(opponent='GreatPlayer') == [self.mock_set1.as_dict()]
+        assert self.mock_competitor.sets.get_sets_vs(Competitor(3,'GreatPlayer',['tournament'])) == [self.mock_set1.as_dict()]
 
     def test_calculate_performance_results(self):
         assert calculate_performance(9, 7) == '+1'

@@ -1,9 +1,11 @@
 from sets.set import Set
 from sets.set_history import SetHistory
+from competitor.competitor import Competitor
 import unittest
 
 
 class SetHistoryTest(unittest.TestCase):
+    mock_competitor = Competitor(2000, 'BadPlayer', ['tournament'])
     mock_set1_data = {
         "id": 1, "round": 1, "slots": [
             {
@@ -87,7 +89,7 @@ class SetHistoryTest(unittest.TestCase):
                     {
                         "gamerTag": "BadPlayer",
                         "player": {
-                                "id": 2
+                                "id": 2000
                         }
                     }
                 ],
@@ -135,7 +137,7 @@ class SetHistoryTest(unittest.TestCase):
                     {
                         "gamerTag": "BadPlayer",
                         "player": {
-                                "id": 2
+                                "id": 2000
                         }
                     }
                 ],
@@ -166,7 +168,8 @@ class SetHistoryTest(unittest.TestCase):
 
     def test_returns_sets_vs_opponent(self):
         expected_value = [self.mock_set2.as_dict(), self.mock_set3.as_dict()]
-        assert self.set_history.get_sets_vs('BadPlayer') == expected_value
+        result = self.set_history.get_sets_vs(self.mock_competitor)
+        assert result == expected_value
 
     def test_returns_lost_sets(self):
         expected_value = [self.mock_set1.as_dict()]
@@ -174,7 +177,7 @@ class SetHistoryTest(unittest.TestCase):
 
     def test_returns_error_when_calling_sets_vs_opponent_not_in_sets(self):
         try:
-            self.set_history.get_sets_vs('non_existent_player')
+            self.set_history.get_sets_vs(Competitor(4,'tag',['tournament']))
         except ValueError:
             assert True
 
@@ -187,11 +190,14 @@ class SetHistoryTest(unittest.TestCase):
     def test_returns_list_of_set_dictionares(self):
         expected_value = [
             {"score1": 3, "winner": "GoodPlayer", "score2": 1, "loser": "BadPlayer",
-            "round": 4, "tournament": "tournament2", "result": "expected"},
+            "round": 4, "tournament": "tournament2", "result": "expected",
+            "winner_id":1, "loser_id":2000},
             {"score1": 3, "winner": "GoodPlayer", "score2": 0, "loser": "BadPlayer",
-            "round": 2, "tournament": "tournament3", "result": "expected"},
+            "round": 2, "tournament": "tournament3", "result": "expected",
+            "winner_id":1, "loser_id":2000},
             {"score1": 2, "winner": "GreatPlayer", "score2": 0, "loser": "GoodPlayer",
-            "round": 1, "tournament": "tournament1", "result": "expected"}
+            "round": 1, "tournament": "tournament1", "result": "expected",
+            "winner_id":3, "loser_id":1}
         ]
         self.assertEqual(expected_value, self.set_history.get_sets())
 
@@ -202,11 +208,14 @@ class SetHistoryTest(unittest.TestCase):
         self.set_history.update_player_tag("GoodPlayer", "NewTag")
         expected_value = [
             {"score1": 3, "winner": "NewTag", "score2": 1, "loser": "BadPlayer",
-            "round": 4, "tournament": "tournament2", "result": "expected"},
+            "round": 4, "tournament": "tournament2", "result": "expected",
+            "winner_id":1, "loser_id":2000},
             {"score1": 3, "winner": "NewTag", "score2": 0, "loser": "BadPlayer",
-            "round": 2, "tournament": "tournament3", "result": "expected"},
+            "round": 2, "tournament": "tournament3", "result": "expected",
+            "winner_id":1, "loser_id":2000},
             {"score1": 2, "winner": "GreatPlayer", "score2": 0, "loser": "NewTag",
-            "round": 1, "tournament": "tournament1", "result": "expected"}
+            "round": 1, "tournament": "tournament1", "result": "expected",
+            "winner_id":3, "loser_id":1}
         ]
         assert expected_value==self.set_history.get_sets()
 
