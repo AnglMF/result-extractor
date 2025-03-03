@@ -9,7 +9,8 @@ class CompetitorTest(unittest.TestCase):
     player_id = 00000
     tournaments = ['tournament1', 'tournament2', 'tournament3', 
                    'tournament4', 'tournament5']
-    mock_competitor = Competitor(player_id, 'Tag', tournaments)
+    mock_competitor = Competitor(player_id, 'GoodPlayer', tournaments)
+    mock_competitor_great = Competitor(player_id, 'GreatPlayer', tournaments)
     mock_competitor_copy = Competitor(player_id, 'Tag_copy', ['tournament1', 
                                                               'tournament2', 
                                                               'tournament3', 
@@ -78,6 +79,18 @@ class CompetitorTest(unittest.TestCase):
     def test_return_tournament_attendance(self):
         attendance = self.mock_competitor.assistance_percentage
         assert attendance == (2/5*100)
+
+    def test_return_h2h_for_player_with_gamertag(self):
+        expected = '0-1'
+        result = self.mock_competitor.record_vs("GreatPlayer")
+        print(result)
+        assert result == expected
+
+    def test_return_h2h_for_player_with_competitor_obj(self):
+        expected = '0-1'
+        result = self.mock_competitor.record_vs(self.mock_competitor_great)
+        print(result)
+        assert result == expected
 
     def test_register_competitor_set(self):
         self.mock_competitor.register_set(self.mock_set1)

@@ -7,11 +7,17 @@ import queries
 import json
 
 
-def is_dq(_set):
-    if _set.score1 >= 0 and _set.score2 >= 0:
-        return True
-    else:
-        return False
+def is_valid(_set):
+    dq = False
+    invalid = False
+    ## Check if the set is a DQ (one of the scores is -1)
+    try:
+        if _set.score1 < 0 or _set.score2 < 0:
+            dq = True
+    except (ValueError, TypeError) as e:
+        invalid = True
+    finally:
+        return not (dq or invalid)
 
 
 class Query:
@@ -77,16 +83,17 @@ class Query:
                 for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
                     try:
                         set_entry = Set(value, tournament)
-                        if is_dq(set_entry):
+                        if is_valid(set_entry) and set_entry.valid:
                             sets.append(set_entry)
                             del set_entry
                     except AttributeError:
-                        print('invalid set')
+                        pass
                 sets_registered += per_page
                 page_number += 1
                 if sets_registered >= total_sets:
                     print(f'Registered {sets_registered} sets of {total_sets}')
                     break
-        except TypeError:
+        except TypeError as e:
             print(f'Error with {tournament}')
+            print(e)
         return sets

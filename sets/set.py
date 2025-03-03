@@ -1,6 +1,7 @@
 class Set:
     def __init__(self, set_dict, tournament):
         try:
+            self.Valid = False
             self.player1 = set_dict["slots"][0]["entrant"]["participants"][0]["gamerTag"]
             self.player2 = set_dict["slots"][1]["entrant"]["participants"][0]["gamerTag"]
             self.player1_id = set_dict["slots"][0]["entrant"]["participants"][0]["player"]["id"]
@@ -14,6 +15,7 @@ class Set:
             self.set_id = set_dict["id"]
             self.tournament = tournament
             self.round = abs(set_dict["round"])
+            self.valid = True
         except TypeError:
             print("There's an error with the Set data entry")
 

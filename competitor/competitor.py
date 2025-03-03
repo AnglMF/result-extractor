@@ -99,7 +99,6 @@ class Competitor:
 
     def __get_main_data(self):
         competitor_dict = {}
-        print(self.gamertag)
         competitor_dict['id'] = self.id
         competitor_dict['name'] = self.gamertag
         competitor_dict['avg_placing'] = self.average
@@ -114,7 +113,11 @@ class Competitor:
         return competitor_dict
 
     def record_vs(self, opponent):
-        return self.sets.get_set_record_vs(opponent)
+        if isinstance(opponent, Competitor):
+            return self.sets.get_set_record_vs_id(opponent)
+        else:
+            return self.sets.get_set_record_vs_gamertag(opponent)
+    
     
     def combine_data(self, competitor_clone):
         # Add the placings of the "clone" to the competitor object
@@ -124,10 +127,12 @@ class Competitor:
                                       competitor_clone.placings[tournament])
         
         # Register all sets from the clone to the competitor object
-        competitor_clone.sets.update_player_tag(competitor_clone.gamertag,
-                                                self.gamertag)
         for _set in competitor_clone.sets.sets:
             self.register_set(_set)
+            
+        # Update the playertag on all sets newly registered
+        self.sets.update_player_tag(competitor_clone.gamertag,
+                                                self.gamertag)
         return
 
     def __str__(self):

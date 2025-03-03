@@ -39,27 +39,53 @@ class SetHistory:
 
     def get_sets_vs(self, opponent):
         self.__sort_sets()
-        sets_h2h = [_set for _set in self.sets if opponent.id in _set.as_dict().values()]
+        sets_h2h = []
+        if isinstance(opponent, str):
+            print(f'Getting data of {self.player} vs {opponent}')
+            sets_h2h = [_set for _set in self.sets if opponent in _set.as_dict().values()]
+        else:
+            
+            print(f'Getting data of {self.player} vs {opponent.gamertag}')
+            sets_h2h = [_set for _set in self.sets if opponent.gamertag in _set.as_dict().values()]
         if not sets_h2h:
-            raise ValueError('No sets vs specified player: {op}'.format(op=opponent.gamertag))
+            print('No sets vs specified player')
+            pass
         else:
             return self.get_sets_dict_list(sets_h2h)
 
-    def get_set_record_vs(self, opponent):
+    def get_set_record_vs_id(self, opponent):
         ret = ""
         try:
-            sets = [_set for _set in self.sets if opponent.id in _set.as_dict().values()]
+            sets_h2h = [_set for _set in self.sets if opponent.gamertag in _set.as_dict().values()]
+            won = 0
+            lost = 0
+            for _set in sets_h2h:
+                if _set.player1 == opponent.gamertag:
+                    lost += 1
+                else:
+                    won += 1
+            if (won+lost)>0:
+                ret = str(won) + "-" + str(lost)
+        except ValueError:
+            pass
+        finally:
+            return ret
+        
+    def get_set_record_vs_gamertag(self, opponent):
+        ret = ""
+        try:
+            sets = [_set for _set in self.sets if opponent in _set.as_dict().values()]
             won = 0
             lost = 0
             for _set in sets:
-                if _set.player1_id == opponent.id:
+                if _set.player1 == opponent:
                     lost += 1
                 else:
                     won += 1
             if not(won == 0 and lost == 0):
                 ret = str(won) + "-" + str(lost)
         except ValueError:
-            pass
+            print('check me :)')
         finally:
             return ret
 

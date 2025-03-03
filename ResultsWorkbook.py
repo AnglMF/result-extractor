@@ -63,7 +63,18 @@ class ResultsWorkBook:
 
     def create_spreadsheet(self, ranking_object, placings, tournaments):
         self.register_sets(ranking_object.sets.get_sets())
-        self.register_h2h(ranking_object.ranking.get_h2h_record())
+        if ranking_object.ranking.unordered == True:
+            self.register_h2h(
+                ranking_object.ranking.get_h2h_record(
+                        list(ranking_object.competitors.values())
+                    )
+                )
+        else:
+            self.register_h2h(
+                ranking_object.ranking.get_h2h_record(
+                        ranking_object.ranking.competitors_sorted
+                    )
+                )
         self.register_placings(placings, tournaments)
         for tournament in tournaments:
             data = ranking_object.ranking.get_single_tournament_results(tournament)
