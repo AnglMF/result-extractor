@@ -41,11 +41,9 @@ class SetHistory:
         self.__sort_sets()
         sets_h2h = []
         if isinstance(opponent, str):
-            print(f'Getting data of {self.player} vs {opponent}')
             sets_h2h = [_set for _set in self.sets if opponent in _set.as_dict().values()]
         else:
             
-            print(f'Getting data of {self.player} vs {opponent.gamertag}')
             sets_h2h = [_set for _set in self.sets if opponent.gamertag in _set.as_dict().values()]
         if not sets_h2h:
             print('No sets vs specified player')
@@ -70,6 +68,46 @@ class SetHistory:
             pass
         finally:
             return ret
+
+    def get_games_record_vs_id(self, opponent):
+        ret = ""
+        try:
+            sets_h2h = [_set for _set in self.sets if opponent.gamertag in _set.as_dict().values()]
+            won = 0
+            lost = 0
+            for _set in sets_h2h:
+                if _set.player1 == opponent.gamertag:
+                    won += _set.score2
+                    lost += _set.score1
+                else:
+                    won += _set.score1
+                    lost += _set.score2
+            if (won+lost)>0:
+                ret = str(won) + "-" + str(lost)
+        except ValueError:
+            pass
+        finally:
+            return ret
+        
+    def get_games_record_vs_gamertag(self, opponent):
+        ret = ""
+        try:
+            sets_h2h = [_set for _set in self.sets if opponent in _set.as_dict().values()]
+            won = 0
+            lost = 0
+            for _set in sets_h2h:
+                if _set.player1 == opponent:
+                    won += _set.score2
+                    lost += _set.score1
+                else:
+                    won += _set.score1
+                    lost += _set.score2
+            if (won+lost)>0:
+                ret = str(won) + "-" + str(lost)
+        except ValueError:
+            pass
+        finally:
+            return ret
         
     def get_set_record_vs_gamertag(self, opponent):
         ret = ""
@@ -85,7 +123,7 @@ class SetHistory:
             if not(won == 0 and lost == 0):
                 ret = str(won) + "-" + str(lost)
         except ValueError:
-            print('check me :)')
+            pass
         finally:
             return ret
 

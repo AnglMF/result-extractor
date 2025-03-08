@@ -110,6 +110,16 @@ class Ranking:
             player_records.append(player_record_dictionary)
         return player_records
     
+    def get_games_h2h_record(self, competitor_list):
+        player_records = []
+        for competitor1 in competitor_list:
+            player_record_dictionary = {'player': competitor1.gamertag}
+            for competitor2 in competitor_list:
+                if competitor1 != competitor2:
+                    player_record_dictionary[competitor2.gamertag] = competitor1.record_vs_games(competitor2)
+            player_records.append(player_record_dictionary)
+        return player_records
+    
     def check_inconsistencies(self, competitor1, competitor2):
             #set_data1 = competitor1.get_sets('vs', opponent=competitor2)
             #set_data2 = competitor2.get_sets('vs', opponent=competitor1)
@@ -165,51 +175,6 @@ class Ranking:
                             self.check_inconsistencies(player, updating_player)    
                 break
         return
-
-
-
-
-
-        #for old_tag in old_tags:
-#
-        #    # If the tag is the same, no need to update the tag
-        #    if not old_tag == new_tag: 
-        #        print(f'Updating set history from {old_tag} into {new_tag}')
-        #        self.total_sets.update_player_tag(old_tag, new_tag)
-#
-        #    #Begin search of player where data will be merged (new_tag)
-        #    for player in list(self.competitors.values()):
-        #        if player.gamertag == new_tag:
-        #            # Player who will have data merged has been found
-        #            print(f'Merging data into {player.gamertag}')
-#
-        #            # Iterate through all players to correct the data to new_tag
-        #            for old_player in list(self.competitors.values()):
-#
-        #                # Check if current player is to be removed
-        #                if old_player.gamertag == old_tag:
-#
-        #                    # Duplicate/copy has been found
-        #                    if not old_player == player:
-        #                        print(f'Found copy: {old_player.gamertag}')
-        #                        # If it's not actually the same player, merge them
-        #                        print(f'Combining data into {new_tag}')
-        #                        player.combine_data(old_player)
-        #                        print(f'Removing {old_player.gamertag}')
-        #                        self.competitors.pop(old_player.id)
-        #                        print(f'Merged player {old_tag} into {new_tag}')
-#
-        #                # If not to be removed, check if player has sets vs
-        #                # player to be removed, and update to new_tag
-        #                elif old_player.record_vs(old_tag):
-        #                    print(f'{old_player.gamertag} has sets with {old_tag}, updating...')
-        #                    old_player.sets.update_player_tag(old_tag, new_tag)
-        #                    print(f'Updated set data for {old_player.gamertag}')
-#
-        #                self.check_inconsistencies(player, old_player)
-#
-        #            break
-        #return
     
     def remove_duplicate_player(self, tag):
         self.merge_players([tag],tag)

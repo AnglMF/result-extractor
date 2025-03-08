@@ -83,21 +83,29 @@ class CompetitorTest(unittest.TestCase):
     def test_return_h2h_for_player_with_gamertag(self):
         expected = '0-1'
         result = self.mock_competitor.record_vs("GreatPlayer")
-        print(result)
-        assert result == expected
+        self.assertEqual(result, expected)
 
     def test_return_h2h_for_player_with_competitor_obj(self):
         expected = '0-1'
         result = self.mock_competitor.record_vs(self.mock_competitor_great)
-        print(result)
-        assert result == expected
+        self.assertEqual(result, expected)
+
+    def test_return_games_h2h_for_player_with_gamertag(self):
+        expected = '0-2'
+        result = self.mock_competitor.record_vs_games("GreatPlayer")
+        self.assertEqual(result, expected)
+
+    def test_return_games_h2h_for_player_with_competitor_obj(self):
+        expected = '0-2'
+        result = self.mock_competitor.record_vs_games(self.mock_competitor_great)
+        self.assertEqual(result, expected)
 
     def test_register_competitor_set(self):
         self.mock_competitor.register_set(self.mock_set1)
         assert True
 
     def test_return_empty_list_for_not_found_sets(self):
-        assert self.mock_competitor.sets.get_sets_won() == []
+        self.assertEqual(self.mock_competitor.sets.get_sets_won(),[])
 
     def test_return_list_with_sets_found(self):
         assert self.mock_competitor.sets.get_sets_vs(Competitor(3,'GreatPlayer',['tournament'])) == [self.mock_set1.as_dict()]

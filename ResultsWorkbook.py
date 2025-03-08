@@ -61,6 +61,18 @@ class ResultsWorkBook:
         column = self.worksheet.column_dimensions['B']
         column.alignment = Alignment(horizontal='center')
 
+    def register_games_h2h(self, info):
+        self.worksheet = self.new_worksheet("H2H_games")
+        df = pandas.DataFrame.from_dict(info)
+        player_list = []
+        for competitor in info:
+            player_list.append(competitor["player"])
+        orden = ["player"] + player_list
+        df = df.reindex(columns=orden)
+        for r in dataframe_to_rows(df, index=True, header=True):
+            self.worksheet.append(r)
+        return
+
     def create_spreadsheet(self, ranking_object, placings, tournaments):
         self.register_sets(ranking_object.sets.get_sets())
         if ranking_object.ranking.unordered == True:
@@ -69,9 +81,19 @@ class ResultsWorkBook:
                         list(ranking_object.competitors.values())
                     )
                 )
+            self.register_games_h2h(
+                ranking_object.ranking.get_games_h2h_record(
+                        list(ranking_object.competitors.values())
+                    )
+                )
         else:
             self.register_h2h(
                 ranking_object.ranking.get_h2h_record(
+                        ranking_object.ranking.competitors_sorted
+                    )
+                )
+            self.register_games_h2h(
+                ranking_object.ranking.get_games_h2h_record(
                         ranking_object.ranking.competitors_sorted
                     )
                 )

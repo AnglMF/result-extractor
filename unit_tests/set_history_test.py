@@ -164,16 +164,16 @@ class SetHistoryTest(unittest.TestCase):
 
     def test_returns_sorted_sets_by_relevance(self):
         expected_value = [self.mock_set2.as_dict(), self.mock_set3.as_dict(), self.mock_set1.as_dict()]
-        assert self.set_history.get_sets() == expected_value
+        self.assertEqual(self.set_history.get_sets(),expected_value)
 
     def test_returns_sets_vs_opponent(self):
         expected_value = [self.mock_set2.as_dict(), self.mock_set3.as_dict()]
         result = self.set_history.get_sets_vs(self.mock_competitor)
-        assert result == expected_value
+        self.assertEqual(result,expected_value)
 
     def test_returns_lost_sets(self):
         expected_value = [self.mock_set1.as_dict()]
-        assert self.set_history.get_sets_lost() == expected_value
+        self.assertEqual(self.set_history.get_sets_lost(),expected_value)
 
     def test_returns_error_when_calling_sets_vs_opponent_not_in_sets(self):
         try:
@@ -202,7 +202,7 @@ class SetHistoryTest(unittest.TestCase):
         self.assertEqual(expected_value, self.set_history.get_sets())
 
     def test_get_correct_win_percentage(self):
-        assert self.set_history.win_percentage == 2*100/3
+        self.assertEqual(self.set_history.win_percentage,2*100/3)
 
     def test_update_participant_tag(self):
         self.set_history.update_player_tag("GoodPlayer", "NewTag")
@@ -217,5 +217,25 @@ class SetHistoryTest(unittest.TestCase):
             "round": 1, "tournament": "tournament1", "result": "expected",
             "winner_id":3, "loser_id":1}
         ]
-        assert expected_value==self.set_history.get_sets()
+        self.assertEqual(expected_value,self.set_history.get_sets())
+
+    def test_get_set_h2h_vs_player_obj(self):
+        expected_value = '2-0'
+        actual_value = self.set_history.get_set_record_vs_id(Competitor(2000, 'BadPlayer', ['x']))
+        self.assertEqual(expected_value,actual_value)
+
+    def test_get_set_h2h_vs_player_tag(self):
+        expected_value = '2-0'
+        actual_value = self.set_history.get_set_record_vs_gamertag('BadPlayer')
+        self.assertEqual(expected_value,actual_value)
+
+    def test_get_game_h2h_vs_player_obj(self):
+        expected_value = '6-1'
+        actual_value = self.set_history.get_games_record_vs_id(Competitor(2000, 'BadPlayer', ['x']))
+        self.assertEqual(expected_value,actual_value)
+
+    def test_get_game_h2h_vs_player_tag(self):
+        expected_value = '6-1'
+        actual_value = self.set_history.get_games_record_vs_gamertag('BadPlayer')
+        self.assertEqual(expected_value,actual_value)
 

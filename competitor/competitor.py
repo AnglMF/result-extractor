@@ -117,6 +117,12 @@ class Competitor:
             return self.sets.get_set_record_vs_id(opponent)
         else:
             return self.sets.get_set_record_vs_gamertag(opponent)
+        
+    def record_vs_games(self, opponent):
+        if isinstance(opponent, Competitor):
+            return self.sets.get_games_record_vs_id(opponent)
+        else:
+            return self.sets.get_games_record_vs_gamertag(opponent)
     
     
     def combine_data(self, competitor_clone):
