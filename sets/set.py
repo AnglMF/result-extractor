@@ -2,17 +2,17 @@ class Set:
     def __init__(self, set_dict, tournament):
         try:
             self.Valid = False
-            self.player1 = set_dict["slots"][0]["entrant"]["participants"][0]["gamerTag"]
-            self.player2 = set_dict["slots"][1]["entrant"]["participants"][0]["gamerTag"]
-            self.player1_id = set_dict["slots"][0]["entrant"]["participants"][0]["player"]["id"]
-            self.player2_id = set_dict["slots"][1]["entrant"]["participants"][0]["player"]["id"]
-            self.score1 = set_dict["slots"][0]["standing"]["stats"]["score"]["value"]
-            self.score2 = set_dict["slots"][1]["standing"]["stats"]["score"]["value"]
-            seed1 = set_dict["slots"][0]["entrant"]["seeds"][0]["seedNum"]
-            seed2 = set_dict["slots"][1]["entrant"]["seeds"][0]["seedNum"]
+            self.player1 = set_dict['player1']
+            self.player2 = set_dict['player2']
+            self.player1_id = set_dict['player1_id']
+            self.player2_id = set_dict['player2_id']
+            self.score1 = set_dict['score1']
+            self.score2 = set_dict['score2']
+            seed1 = set_dict['seed1']
+            seed2 = set_dict['seed2']
             self.result = ""
-            self.check_winner(set_dict["slots"][0]["standing"]["placement"], seed1, seed2)
-            self.set_id = set_dict["id"]
+            self.check_winner(set_dict['winner'], seed1, seed2)
+            self.set_id = set_dict["set_id"]
             self.tournament = tournament
             self.round = abs(set_dict["round"])
             self.valid = True

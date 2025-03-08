@@ -16,7 +16,7 @@ class CompetitorTest(unittest.TestCase):
                                                               'tournament3', 
                                                               'tournament4', 
                                                               'tournament5'])
-    mock_set1_data = {
+    mock_set1_data_raw = {
         "id": 1, "round": 1, "slots": [
             {
                 "standing": {
@@ -59,6 +59,20 @@ class CompetitorTest(unittest.TestCase):
             }
         ]
     }
+    mock_set1_data = {}
+    mock_set1_data['player1'] = mock_set1_data_raw["slots"][0]["entrant"]["participants"][0]["gamerTag"]
+    mock_set1_data['player2'] = mock_set1_data_raw["slots"][1]["entrant"]["participants"][0]["gamerTag"]
+    mock_set1_data['player1_id'] = mock_set1_data_raw["slots"][0]["entrant"]["participants"][0]["player"]["id"]
+    mock_set1_data['player2_id'] = mock_set1_data_raw["slots"][1]["entrant"]["participants"][0]["player"]["id"]
+    mock_set1_data['score1'] = mock_set1_data_raw["slots"][0]["standing"]["stats"]["score"]["value"]
+    mock_set1_data['score2'] = mock_set1_data_raw["slots"][1]["standing"]["stats"]["score"]["value"]
+    mock_set1_data['seed1'] = mock_set1_data_raw["slots"][0]["entrant"]["seeds"][0]["seedNum"]
+    mock_set1_data['seed2'] = mock_set1_data_raw["slots"][1]["entrant"]["seeds"][0]["seedNum"]
+    mock_set1_data['winner'] = mock_set1_data_raw["slots"][0]["standing"]["placement"]
+    mock_set1_data['set_id'] = mock_set1_data_raw["id"]
+    mock_set1_data['tournament'] = 'tournament1'
+    mock_set1_data['round'] = abs(mock_set1_data_raw["round"])
+    print(mock_set1_data)
     mock_set1 = Set(mock_set1_data, 'tournament1')
 
     def test_return_attendance(self):

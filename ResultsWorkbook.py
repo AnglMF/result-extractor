@@ -78,12 +78,12 @@ class ResultsWorkBook:
         if ranking_object.ranking.unordered == True:
             self.register_h2h(
                 ranking_object.ranking.get_h2h_record(
-                        list(ranking_object.competitors.values())
+                        list(ranking_object.ranking.competitors.values())
                     )
                 )
             self.register_games_h2h(
                 ranking_object.ranking.get_games_h2h_record(
-                        list(ranking_object.competitors.values())
+                        list(ranking_object.ranking.competitors.values())
                     )
                 )
         else:

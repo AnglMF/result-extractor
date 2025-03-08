@@ -36,7 +36,7 @@ class RankingTest(unittest.TestCase):
     mock_ranking.competitors[mock_competitor4.id] = mock_competitor4
     mock_ranking.competitors[mock_competitor5.id] = mock_competitor5
 
-    mock_set1_data = {
+    mock_set1_data_raw = {
         "id": 1, "round": 1, "slots": [
             {
                 "standing": {
@@ -79,7 +79,7 @@ class RankingTest(unittest.TestCase):
             }
         ]
     }
-    mock_set2_data = {
+    mock_set2_data_raw = {
         "id": 2, "round": 4, "slots": [
             {
                 "standing": {
@@ -122,7 +122,7 @@ class RankingTest(unittest.TestCase):
             }
         ]
     }
-    mock_set3_data = {
+    mock_set3_data_raw = {
         "id": 3, "round": 2, "slots": [
             {
                 "standing": {
@@ -165,6 +165,45 @@ class RankingTest(unittest.TestCase):
             }
         ]
     }
+    mock_set1_data = {}
+    mock_set1_data['player1'] = mock_set1_data_raw["slots"][0]["entrant"]["participants"][0]["gamerTag"]
+    mock_set1_data['player2'] = mock_set1_data_raw["slots"][1]["entrant"]["participants"][0]["gamerTag"]
+    mock_set1_data['player1_id'] = mock_set1_data_raw["slots"][0]["entrant"]["participants"][0]["player"]["id"]
+    mock_set1_data['player2_id'] = mock_set1_data_raw["slots"][1]["entrant"]["participants"][0]["player"]["id"]
+    mock_set1_data['score1'] = mock_set1_data_raw["slots"][0]["standing"]["stats"]["score"]["value"]
+    mock_set1_data['score2'] = mock_set1_data_raw["slots"][1]["standing"]["stats"]["score"]["value"]
+    mock_set1_data['seed1'] = mock_set1_data_raw["slots"][0]["entrant"]["seeds"][0]["seedNum"]
+    mock_set1_data['seed2'] = mock_set1_data_raw["slots"][1]["entrant"]["seeds"][0]["seedNum"]
+    mock_set1_data['winner'] = mock_set1_data_raw["slots"][0]["standing"]["placement"]
+    mock_set1_data['set_id'] = mock_set1_data_raw["id"]
+    mock_set1_data['tournament'] = 'tournament1'
+    mock_set1_data['round'] = abs(mock_set1_data_raw["round"])
+    mock_set2_data = {}
+    mock_set2_data['player1'] = mock_set2_data_raw["slots"][0]["entrant"]["participants"][0]["gamerTag"]
+    mock_set2_data['player2'] = mock_set2_data_raw["slots"][1]["entrant"]["participants"][0]["gamerTag"]
+    mock_set2_data['player1_id'] = mock_set2_data_raw["slots"][0]["entrant"]["participants"][0]["player"]["id"]
+    mock_set2_data['player2_id'] = mock_set2_data_raw["slots"][1]["entrant"]["participants"][0]["player"]["id"]
+    mock_set2_data['score1'] = mock_set2_data_raw["slots"][0]["standing"]["stats"]["score"]["value"]
+    mock_set2_data['score2'] = mock_set2_data_raw["slots"][1]["standing"]["stats"]["score"]["value"]
+    mock_set2_data['seed1'] = mock_set2_data_raw["slots"][0]["entrant"]["seeds"][0]["seedNum"]
+    mock_set2_data['seed2'] = mock_set2_data_raw["slots"][1]["entrant"]["seeds"][0]["seedNum"]
+    mock_set2_data['winner'] = mock_set2_data_raw["slots"][0]["standing"]["placement"]
+    mock_set2_data['set_id'] = mock_set2_data_raw["id"]
+    mock_set2_data['tournament'] = 'tournament1'
+    mock_set2_data['round'] = abs(mock_set2_data_raw["round"])
+    mock_set3_data = {}
+    mock_set3_data['player1'] = mock_set3_data_raw["slots"][0]["entrant"]["participants"][0]["gamerTag"]
+    mock_set3_data['player2'] = mock_set3_data_raw["slots"][1]["entrant"]["participants"][0]["gamerTag"]
+    mock_set3_data['player1_id'] = mock_set3_data_raw["slots"][0]["entrant"]["participants"][0]["player"]["id"]
+    mock_set3_data['player2_id'] = mock_set3_data_raw["slots"][1]["entrant"]["participants"][0]["player"]["id"]
+    mock_set3_data['score1'] = mock_set3_data_raw["slots"][0]["standing"]["stats"]["score"]["value"]
+    mock_set3_data['score2'] = mock_set3_data_raw["slots"][1]["standing"]["stats"]["score"]["value"]
+    mock_set3_data['seed1'] = mock_set3_data_raw["slots"][0]["entrant"]["seeds"][0]["seedNum"]
+    mock_set3_data['seed2'] = mock_set3_data_raw["slots"][1]["entrant"]["seeds"][0]["seedNum"]
+    mock_set3_data['winner'] = mock_set3_data_raw["slots"][0]["standing"]["placement"]
+    mock_set3_data['set_id'] = mock_set3_data_raw["id"]
+    mock_set3_data['tournament'] = 'tournament1'
+    mock_set3_data['round'] = abs(mock_set3_data_raw["round"])
     mock_set1 = Set(mock_set1_data, 't1')
     mock_set2 = Set(mock_set2_data, 't2')
     mock_set3 = Set(mock_set3_data, 't2')

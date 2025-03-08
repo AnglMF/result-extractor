@@ -1,17 +1,17 @@
 from urllib.error import HTTPError
 
-from queries.queries import Query
+from queries.queries import start_gg
 
 import unittest
 import os
 
 
 class QueryTest(unittest.TestCase):
-    client = Query(os.environ['TOKEN'])
+    client = start_gg(os.environ['TOKEN'])
 
     # test for invalid token
     def test_fails_when_invalid_token_injected(self):
-        bad_client = Query('token')
+        bad_client = start_gg('token')
         try:
             bad_client.query_tournament_events(['a', 'b', 'c'], 'smush')
         except HTTPError:

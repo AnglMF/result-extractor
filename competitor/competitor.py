@@ -85,13 +85,16 @@ class Competitor:
 
     def get_tournament_result(self, tournament):
         competitor_dict = self.__get_main_data()
+        print(competitor_dict)
+        print(self.placings)
         try:
             competitor_dict['placing'] = self.placings[tournament]["placing"]
             competitor_dict['seed'] = self.placings[tournament]["seed"]
             competitor_dict['performance'] = calculate_performance(self.placings[tournament]["seed"],
                                                                    self.placings[tournament]["placing"])
-        except KeyError:
+        except KeyError as e:
             print("error with performance/results data for " + competitor_dict["name"])
+            print(e)
             competitor_dict['placing'] = '-'
             competitor_dict['seed'] = '-'
             competitor_dict['performance'] = '-'
