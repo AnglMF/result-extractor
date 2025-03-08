@@ -1,6 +1,6 @@
-from competitor.competitor import Competitor
-from competitor.competitor import calculate_performance
-from sets.set import Set
+from ranking.competitor import Competitor
+from ranking.competitor import calculate_performance
+from ranking.set import Set
 import unittest
 unittest.TestLoader.sortTestMethodsUsing=None
 

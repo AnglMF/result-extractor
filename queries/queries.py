@@ -1,7 +1,8 @@
 from graphqlclient import GraphQLClient
-from sets.set import Set
+from ranking.set import Set
 from datetime import datetime, timedelta
 from time import sleep
+from requests import HTTPError as req_error
 
 import challonge
 import queries
@@ -37,6 +38,30 @@ class start_gg:
         if "errors" in response.keys():
             raise ValueError("There's an error with the query")
         return response
+    
+    def __extract_set_data(self, data, tournament):
+            set_data = {}
+            set_data['player1'] = data["slots"][0]["entrant"]["participants"][0]["gamerTag"]
+            set_data['player2'] = data["slots"][1]["entrant"]["participants"][0]["gamerTag"]
+            set_data['player1_id'] = data["slots"][0]["entrant"]["participants"][0]["player"]["id"]
+            set_data['player2_id'] = data["slots"][1]["entrant"]["participants"][0]["player"]["id"]
+            set_data['score1'] = data["slots"][0]["standing"]["stats"]["score"]["value"]
+            set_data['score2'] = data["slots"][1]["standing"]["stats"]["score"]["value"]
+            set_data['seed1'] = data["slots"][0]["entrant"]["seeds"][0]["seedNum"]
+            set_data['seed2'] = data["slots"][1]["entrant"]["seeds"][0]["seedNum"]
+            set_data['winner'] = data["slots"][0]["standing"]["placement"]
+            set_data['set_id'] = data["id"]
+            set_data['tournament'] = tournament
+            set_data['round'] = abs(data["round"])
+            return set_data
+    
+    def _extract_participant_data(self, data):
+        participant = {}
+        participant['id'] = data["entrant"]["participants"][0]["player"]["id"]
+        participant['name'] = data["entrant"]["participants"][0]["gamerTag"]
+        participant['placement'] = data['placement']
+        participant['seed'] = data["entrant"]["seeds"][0]["seedNum"]
+        return participant
 
     def query_tournament_events(self, tournaments_list, events_list=[]):
         request_body = queries.tournament_events_query()
@@ -61,11 +86,7 @@ class start_gg:
         participants_standings_list = []
         total_participants = response['data']['event']['standings']['pageInfo']['total']
         for key, value in enumerate(response['data']['event']['standings']['nodes']):
-            participant = {}
-            participant['id'] = value["entrant"]["participants"][0]["player"]["id"]
-            participant['name'] = value["entrant"]["participants"][0]["gamerTag"]
-            participant['placement'] = value['placement']
-            participant['seed'] = value["entrant"]["seeds"][0]["seedNum"]
+            participant = self._extract_participant_data(value)
             participants_standings_list.append(participant)
             del participant
         return participants_standings_list, total_participants
@@ -84,19 +105,7 @@ class start_gg:
                 total_sets = event_sets["data"]["event"]["sets"]["pageInfo"]["total"]
                 for key, value in enumerate(event_sets["data"]["event"]["sets"]["nodes"]):
                     try:
-                        set_data = {}
-                        set_data['player1'] = value["slots"][0]["entrant"]["participants"][0]["gamerTag"]
-                        set_data['player2'] = value["slots"][1]["entrant"]["participants"][0]["gamerTag"]
-                        set_data['player1_id'] = value["slots"][0]["entrant"]["participants"][0]["player"]["id"]
-                        set_data['player2_id'] = value["slots"][1]["entrant"]["participants"][0]["player"]["id"]
-                        set_data['score1'] = value["slots"][0]["standing"]["stats"]["score"]["value"]
-                        set_data['score2'] = value["slots"][1]["standing"]["stats"]["score"]["value"]
-                        set_data['seed1'] = value["slots"][0]["entrant"]["seeds"][0]["seedNum"]
-                        set_data['seed2'] = value["slots"][1]["entrant"]["seeds"][0]["seedNum"]
-                        set_data['winner'] = value["slots"][0]["standing"]["placement"]
-                        set_data['set_id'] = value["id"]
-                        set_data['tournament'] = tournament
-                        set_data['round'] = abs(value["round"])
+                        set_data = self.__extract_set_data(value, tournament)
                         set_entry = Set(set_data, tournament)
                         if is_valid(set_entry) and set_entry.valid:
                             sets.append(set_entry)
@@ -119,66 +128,91 @@ class challonge_client:
         self.last_request = datetime.now()
         self.next_request = datetime.now()
 
+    def _extract_set_data(self, data, tournament, players_dict):
+        set_data = {}
+        score1, score2 = data['scores_csv'].split('-')
+        set_data['player1_id'] = data['winner_id']
+        set_data['player2_id'] = data['loser_id']
+        set_data['player1'] = players_dict[set_data['player1_id']]["name"]
+        set_data['player2'] = players_dict[set_data['player2_id']]["name"]
+        set_data['score1'] = int(score1)
+        set_data['score2'] = int(score2)
+        set_data['seed1'] = players_dict[set_data['player1_id']]["seed"]
+        set_data['seed2'] = players_dict[set_data['player2_id']]["seed"]
+        set_data['winner'] = 1
+        set_data['set_id'] = data["id"]
+        set_data['tournament'] = tournament
+        set_data['round'] = abs(data["round"])
+        return set_data
+
+    def _extract_participant_data(self, data):
+        participant = {}
+        participant['id'] = data['id']
+        participant['name'] = data['name']
+        participant['placement'] = data['final_rank']
+        participant['seed'] = data['seed']
+        return participant
+
     def query_tournament_events(self, tournaments_list, events_list=[]):
         events_dict = {}
+        print(tournaments_list)
+        print(events_list)
         for tournament in tournaments_list:
-            response = challonge.tournaments.show(tournament)
             try:
-                events_dict[response['name']] = response['url']
-            except TypeError:
-                print("Tournament doesn't exist: {t}".format(t=tournament))
+                response = challonge.tournaments.show(tournament)
+                try:
+                    events_dict[response['name']] = response['url']
+                except TypeError:
+                    print("Tournament doesn't exist: {t}".format(t=tournament))
+            except req_error as e:
+                print(f'You do not have access to {tournament}')
+                print(f'Check your API credentials or that the tournament is finished')
         if events_dict:
             return events_dict
         else:
-            raise ValueError('Event {e} not found'.format(e=events_list))
+            print('Issues, idk.')
 
     def query_event_standings(self, event):
-        
-        response = challonge.participants.index(event)
         participants_standings_list = []
-        for competitor in response:
-            participant = {}
-            participant['id'] = competitor['id']
-            participant['name'] = competitor['name']
-            participant['placement'] = competitor['final_rank']
-            participant['seed'] = competitor['seed']
-            participants_standings_list.append(participant)
+        try:
+            response = challonge.participants.index(event)
+            for competitor in response:
+                participant = self._extract_participant_data(competitor)
+                participants_standings_list.append(participant)
+                if participant['placement'] == None:
+                    print('Tournament has no standings, check that it was finished.')
+        except req_error as e:
+            print(e)
+            print('API issues')
         return participants_standings_list, 0
 
     def query_event_sets(self, tournament, event_id=''):
-
-        response = challonge.matches.index(event_id, state='complete')
         sets = []
-        players_dict = {} # {<id>: <name>}
-        for player in challonge.participants.index(event_id):
-            players_dict[player['id']] = {"name": player['name'], 
-                                          "seed": player['seed']
-                                          }
+
         try:
-            for match in response:
-                try:
-                    set_data = {}
-                    score1, score2 = match['scores_csv'].split('-')
-                    set_data['player1_id'] = match['winner_id']
-                    set_data['player2_id'] = match['loser_id']
-                    set_data['player1'] = players_dict[set_data['player1_id']]["name"]
-                    set_data['player2'] = players_dict[set_data['player2_id']]["name"]
-                    set_data['score1'] = int(score1)
-                    set_data['score2'] = int(score2)
-                    set_data['seed1'] = players_dict[set_data['player1_id']]["seed"]
-                    set_data['seed2'] = players_dict[set_data['player2_id']]["seed"]
-                    set_data['winner'] = 1
-                    set_data['set_id'] = match["id"]
-                    set_data['tournament'] = tournament
-                    set_data['round'] = abs(match["round"])
-                    set_entry = Set(set_data, tournament)
-                    if is_valid(set_entry) and set_entry.valid:
-                        sets.append(set_entry)
-                        del set_entry
-                except AttributeError as e:
-                    print(e)
-                    pass
-        except TypeError as e:
-            print(f'Error with {event_id}, {tournament}')
+            response = challonge.matches.index(event_id, state='complete')
+            players_dict = {} # {<id>: <name>}
+            for player in challonge.participants.index(event_id):
+                players_dict[player['id']] = {"name": player['name'], 
+                                            "seed": player['seed']
+                                            }
+            try:
+                for match in response:
+                    try:
+                        set_data = self._extract_set_data(match, 
+                                                        tournament, 
+                                                        players_dict)
+                        set_entry = Set(set_data, tournament)
+                        if is_valid(set_entry) and set_entry.valid:
+                            sets.append(set_entry)
+                            del set_entry
+                    except AttributeError as e:
+                        print(e)
+                        pass
+            except TypeError as e:
+                print(f'Error with {event_id}, {tournament}')
+                print(e)
+        except req_error as e:
+            print('API issues')
             print(e)
         return sets

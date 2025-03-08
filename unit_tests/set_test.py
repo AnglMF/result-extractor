@@ -1,4 +1,4 @@
-from sets.set import Set
+from ranking.set import Set
 import unittest
 
 

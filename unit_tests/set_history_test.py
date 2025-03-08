@@ -1,6 +1,6 @@
-from sets.set import Set
-from sets.set_history import SetHistory
-from competitor.competitor import Competitor
+from ranking.set import Set
+from ranking.set_history import SetHistory
+from ranking.competitor import Competitor
 import unittest
 
 

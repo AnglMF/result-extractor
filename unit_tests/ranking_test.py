@@ -1,6 +1,6 @@
 from resultExtractor import Ranking
-from competitor.competitor import Competitor
-from sets.set import Set
+from ranking.competitor import Competitor
+from ranking.set import Set
 import unittest
 
 
