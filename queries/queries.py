@@ -27,6 +27,7 @@ class start_gg:
     def __init__(self, token):
         self.client = GraphQLClient('https://api.smash.gg/gql/alpha')
         self.client.inject_token('Bearer ' + token)
+        self.platform = 'start gg'
         self.last_request = datetime.now()
         self.next_request = datetime.now()
 
@@ -72,7 +73,10 @@ class start_gg:
                 for key, value in enumerate(response['data']['tournament']['events']):
                     for event in events_list:
                         if event == value['name']:
-                            events_dict[tournament] = value['id']
+                            event_dict = {}
+                            event_dict['id'] = value['id']
+                            event_dict['platform'] = self.platform
+                            events_dict[tournament] = event_dict
             except TypeError:
                 print("Tournament doesn't exist: {t}".format(t=tournament))
         if events_dict:
@@ -83,6 +87,7 @@ class start_gg:
     def query_event_standings(self, event):
         request_body = queries.event_standings_query()
         response = self._post(request_body, {'eventID': event})
+        print(response)
         participants_standings_list = []
         total_participants = response['data']['event']['standings']['pageInfo']['total']
         for key, value in enumerate(response['data']['event']['standings']['nodes']):
@@ -125,6 +130,7 @@ class start_gg:
 class challonge_client:
     def __init__(self, user, api_key):
         challonge.set_credentials(user, api_key)
+        self.platform = 'challonge'
         self.last_request = datetime.now()
         self.next_request = datetime.now()
 
@@ -161,7 +167,10 @@ class challonge_client:
             try:
                 response = challonge.tournaments.show(tournament)
                 try:
-                    events_dict[response['name']] = response['url']
+                    event_dict = {}
+                    event_dict['id'] = response['url']
+                    event_dict['platform'] = self.platform
+                    events_dict[response['name']] = event_dict
                 except TypeError:
                     print("Tournament doesn't exist: {t}".format(t=tournament))
             except req_error as e:
