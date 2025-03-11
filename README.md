@@ -43,5 +43,9 @@ Example tournament: `https://www.start.gg/tournament/genesis-x2/`
 You can use both challonge and start gg together during an execution, simply add both clients as described in the sample script **before** capturing all data
 
 ## Using the data
-A sample script is provided that takes all data and outputs an xlsx file. Uncomment the sections as needed to get an excel sheet with data from the tournaments.
+A sample script (`sample_script.py`) is provided that takes all data and outputs an xlsx file. Uncomment the sections as needed to get an excel sheet with data from the tournaments.
+Once you have made all changes (uncommenting all necessary sections) run the script 
+```bash
+$ python sample_script.py
+```
 
