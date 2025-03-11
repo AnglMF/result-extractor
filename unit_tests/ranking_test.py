@@ -1,4 +1,4 @@
-from resultExtractor import Ranking
+from ranking import Ranking
 from ranking.competitor import Competitor
 from ranking.set import Set
 import unittest

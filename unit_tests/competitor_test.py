@@ -72,7 +72,6 @@ class CompetitorTest(unittest.TestCase):
     mock_set1_data['set_id'] = mock_set1_data_raw["id"]
     mock_set1_data['tournament'] = 'tournament1'
     mock_set1_data['round'] = abs(mock_set1_data_raw["round"])
-    print(mock_set1_data)
     mock_set1 = Set(mock_set1_data, 'tournament1')
 
     def test_return_attendance(self):

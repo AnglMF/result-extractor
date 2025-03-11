@@ -30,7 +30,7 @@ class StartGGTest(unittest.TestCase):
     def test_returns_dict_of_events_found(self):
         tournament_list = ['xtr-ultimate-tournament']
         event = ['Smash Ultimate Singles']
-        expected_dict = {'xtr-ultimate-tournament': 294000}
+        expected_dict = {'xtr-ultimate-tournament': {'id': 294000, 'platform': 'start gg'}}
         actual_list = self.start_gg_client.query_tournament_events(tournament_list, event)
         self.assertEqual(expected_dict, actual_list)
 

@@ -87,7 +87,6 @@ class start_gg:
     def query_event_standings(self, event):
         request_body = queries.event_standings_query()
         response = self._post(request_body, {'eventID': event})
-        print(response)
         participants_standings_list = []
         total_participants = response['data']['event']['standings']['pageInfo']['total']
         for key, value in enumerate(response['data']['event']['standings']['nodes']):
@@ -136,13 +135,19 @@ class challonge_client:
 
     def _extract_set_data(self, data, tournament, players_dict):
         set_data = {}
-        score1, score2 = data['scores_csv'].split('-')
+        ss1, ss2 = data['scores_csv'].split('-')
+        score1 = int(ss1)
+        score2 = int(ss2)
         set_data['player1_id'] = data['winner_id']
         set_data['player2_id'] = data['loser_id']
         set_data['player1'] = players_dict[set_data['player1_id']]["name"]
         set_data['player2'] = players_dict[set_data['player2_id']]["name"]
-        set_data['score1'] = int(score1)
-        set_data['score2'] = int(score2)
+        if score1 > score2:
+            set_data['score1'] = score1
+            set_data['score2'] = score2
+        else:
+            set_data['score1'] = score2
+            set_data['score2'] = score1
         set_data['seed1'] = players_dict[set_data['player1_id']]["seed"]
         set_data['seed2'] = players_dict[set_data['player2_id']]["seed"]
         set_data['winner'] = 1
@@ -155,14 +160,15 @@ class challonge_client:
         participant = {}
         participant['id'] = data['id']
         participant['name'] = data['name']
-        participant['placement'] = data['final_rank']
+        if data['final_rank'] == None:
+            participant['placement'] = '-'
+        else:
+            participant['placement'] = data['final_rank']
         participant['seed'] = data['seed']
         return participant
 
     def query_tournament_events(self, tournaments_list, events_list=[]):
         events_dict = {}
-        print(tournaments_list)
-        print(events_list)
         for tournament in tournaments_list:
             try:
                 response = challonge.tournaments.show(tournament)
@@ -188,7 +194,7 @@ class challonge_client:
             for competitor in response:
                 participant = self._extract_participant_data(competitor)
                 participants_standings_list.append(participant)
-                if participant['placement'] == None:
+                if participant['placement'] == '-':
                     print('Tournament has no standings, check that it was finished.')
         except req_error as e:
             print(e)
