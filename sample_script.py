@@ -1,4 +1,4 @@
-from result_extractor import ResultExtractor
+from ranking import ResultExtractor
 from ResultsWorkbook import ResultsWorkBook
 from yaml import load
 import json

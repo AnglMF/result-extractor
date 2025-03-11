@@ -1,7 +1,7 @@
 from ResultsWorkbook import ResultsWorkBook
 from ranking.competitor import Competitor
 from ranking.set import Set
-from result_extractor import ResultExtractor
+from ranking import ResultExtractor
 import unittest
 
 class ResultsWorkbookTest(unittest.TestCase):
