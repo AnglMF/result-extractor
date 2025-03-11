@@ -1,67 +1,47 @@
-# Extractor de resultados de torneos de smash.gg
-Este pequeño programa acepta como entrada una lista de torneos de smash.gg
-y te regresa en conjunto información relevante sobre los torneos listados.
+# How to use
+## Setup an environment for the project
+```bash
+$ cd <project directory>
+$ python -m venv environment
+$ . environment/bin/activate
+$ pip install -r requirements.txt
+```
 
-## Información
-Acutalmente regresa:
-* Listado de todos los sets jugados
-* Listado de todos los participantes y su placing
+## Running the tests
+```bash
+$ python -m unittest unit_tests/*.py
+```
+A few challonge tests are failing lmao, don't know why even though it works as expected. It's an issue with the tests, not with the module. Ups
 
-# Usage
+## Obtain API keys for the desired platforms
+Only challonge and start.gg are supported at this moment.
+#### Start GG API token
+https://developer.start.gg/docs/authentication
 
-You should add the smash.gg tournament URLs in the "tournamentList.yml" file.
-Currently only smash.gg URLs are supported.
+#### Challonge API token
+https://challonge.com/settings/developer
 
-Running ```python resultExtractory.py``` shoud generate an xsls file with the relevant information
-from the tournaments listed in the tournamentList.yml file.
+Put these tokens into the `credentials.json` file, **also include your challonge username** if you are using challonge.
 
-## Modules
+## Getting the list of events to get data from
+### Challonge
+Example tournament: `https://challonge.com/gdhqr624`
 
+1. Go to your tournament and get the ID from the URL.
+2. Put the ID (in this case example: "gdhqr624") into the `challonge.yml` file in a separate line, between single quotes and with the correct indentation under "Tournaments".
 
-## Classes
+Repeat for every tournament
 
-### TournamentSetsRequest
-#### Properties
-- auth_token
-- client
-- events
-- ranking
-- participants_dict
-- sets
-#### Methods
-- ##### ```get_tournament_sets(tournaments, events)```
-  - _tournaments_: List. smash.gg URLs of tournaments
-  - _events_: Events of the tournament that will be crawled.
+### Start gg
+Example tournament: `https://www.start.gg/tournament/genesis-x2/`
 
-  Will extract all of the played sets for the specified event of the provided tournaments.
-  The results of this procedure will be stored in the ```sets``` property
+1. Go to the tournament page and get the tournament blob (in this example: "genesis-x2").
+2. Put the blob into the `start_gg.yml` file in a separate line, between single quotes and with the correct indentation under "Tournaments".
+3. Put the name of the event that you want to get the data from (as an example: 'Melee Singles') under "event". Repeat for every variation you find in every tournament (the event name can vary, for example it could be named "Singles", "SSBM Singles", "Melee Singles", etc. If none of the event names are found in a tournament, no data will be extracted).
 
+------
+You can use both challonge and start gg together during an execution, simply add both clients as described in the sample script **before** capturing all data
 
-### Ranking
-#### Properties
-- _total_sets_:
-- _competitors_: List[]. Contains a list of all competitors extracted from each tournemant's events.
-- ___qualified_competitors_: List[]
-- ___unqualified_competitors_: List[]
-
-#### Methods
-- ##### ```sort_by_avg_placing()```
-  Will sort the ```competitors``` list by their ```average``` property.
-
-- ##### ```set_assistance_requirement(**kwargs)```
-  Supported keyword arguments are:
-  - tournament_number: Int.
-  - assistance_percentage: Int.
-
-  Will filter competitors into qualified and unqualified, based on the argument provided.
-  Qualified competitors will end in the ```competitors``` list, while competitors that do not meet the specified
-  criteria will end up in the ```__unqualified_competitors``` property.
-  
-  Assistance percentage ranges from 0 to 100.
-
-- ##### ```assign_set_history```
-
-  Populates the ```sets``` property of the top 15 competitors with the highest ```average``` property value.
-
-
+## Using the data
+A sample script is provided that takes all data and outputs an xlsx file. Uncomment the sections as needed to get an excel sheet with data from the tournaments.
 
