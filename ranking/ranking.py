@@ -23,12 +23,19 @@ class Ranking:
             else:
                 unique_tags.add(tag)
         print('Players after removing duplicates...')
-        print(unique_tags)
+        sorted_tags = sorted(list(unique_tags), key=lambda gamertag: gamertag.lower())
+        print(sorted_tags)
 
     def sort_by_avg_placing(self):
         if self.unordered:
             self.unordered = False
             sorted_list = sorted(list(self.competitors.values()), key=lambda competitors: competitors.average)
+            self.competitors_sorted = sorted_list
+
+    def sort_by_win_percentage(self):
+        if self.unordered:
+            self.unordered = False
+            sorted_list = sorted(list(self.competitors.values()), key=lambda competitors: competitors.win_percentage, reverse=True)
             self.competitors_sorted = sorted_list
 
     def set_assistance_requirement(self, **kwargs):

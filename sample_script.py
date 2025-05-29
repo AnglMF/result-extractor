@@ -22,11 +22,11 @@ if __name__ == "__main__":
 
     # Uncomment this if you are going to use startgg data
     #-------------------------------------------------------
-    #start_gg_data = load(open("start_gg.yml", "r"))
-    #data.add_client(start_gg_data["tournaments"], 
-    #                events_list=start_gg_data["event"], 
-    #                client="start_gg",
-    #                api_key = credentials["start_gg"])
+    start_gg_data = load(open("start_gg.yml", "r"))
+    data.add_client(start_gg_data["tournaments"], 
+                    events_list=start_gg_data["event"], 
+                    client="start_gg",
+                    api_key = credentials["start_gg"])
     #-------------------------------------------------------
     
     
@@ -47,15 +47,18 @@ if __name__ == "__main__":
     #-------------------------------------------------------
     #data.ranking.merge_players(["Barto", "rickbb", "elbarto"],"Elbarto")
     #data.ranking.merge_players(["dodo"], "Dodo")
+    #data.ranking.merge_players(["Fist"], "Fist Mexico")
+    #data.ranking.merge_players(["Frank$"], "Fran")
+    #data.ranking.merge_players(["Pantunfla"], "PanterA")
     #-------------------------------------------------------
     
-    data.ranking.sort_by_avg_placing()
+    data.ranking.sort_by_win_percentage()
 
     # Uncomment this to put all the data into an xslx file
     #-------------------------------------------------------
-    #participants_placings = []
-    #for participant in data.ranking.competitors_sorted:
-    #    participants_placings.append(participant.get_all_placings())
-    #file = ResultsWorkBook()
-    #file.create_spreadsheet(data, participants_placings, list(data.events.keys()), name="season stats")
+    participants_placings = []
+    for participant in data.ranking.competitors_sorted:
+        participants_placings.append(participant.get_all_placings())
+    file = ResultsWorkBook()
+    file.create_spreadsheet(data, participants_placings, list(data.events.keys()), name="SD Q1 2025")
     #-------------------------------------------------------

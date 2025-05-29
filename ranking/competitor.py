@@ -38,6 +38,7 @@ class Competitor:
         self.average = 0
         self.tournaments_assisted = 0
         self.assistance_percentage = 0
+        self.win_percentage = 0
         self.sets_won = 0
         for tournament in tournaments:
             self.placings[tournament] = {'placing': '-'}
@@ -67,6 +68,7 @@ class Competitor:
 
     def register_set(self, set_object):
         self.sets.register_set(set_object)
+        self.win_percentage = self.sets.win_percentage
 
     def get_sets(self, category, **kwargs):
         try:
